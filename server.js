@@ -17,14 +17,16 @@ app.use(express.urlencoded({
 }));
 
 
-app.get('/api/test', (req, res) => {
+app.use('/api/test', (req, res) => {
     return res.send('Test Done');
-  });
+});
 
 // Define Routes
 app.use('/api/users', require('./api/routes/users'))
 app.use('/api/auth', require('./api/routes/auth'))
 app.use('/api/products', require('./api/routes/products'))
+
+
 
 // Serve static items in production
 if (process.env.NODE_ENV === 'production') {
