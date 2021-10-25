@@ -1,0 +1,44 @@
+{
+  "name": "other-ecom-pharmacy-backend",
+  "version": "1.0.0",
+  "description": "Node express rest api Backend for ecommerce pharmacy company",
+  "main": "index.js",
+  "engines": {
+    "node": "^17.0.1",
+    "npm": "^8.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "npm start --prefix client",
+    "clientinstall": "npm install --prfix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zworldinc/other-ecom-pharmacy-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zworldinc/other-ecom-pharmacy-backend/issues"
+  },
+  "homepage": "https://github.com/zworldinc/other-ecom-pharmacy-backend#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "config": "^3.3.6",
+    "express": "^4.17.1",
+    "express-validator": "^6.13.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.12"
+  },
+  "devDependencies": {
+    "concurrently": "^6.3.0",
+    "nodemon": "^2.0.14"
+  }
+}
+
+

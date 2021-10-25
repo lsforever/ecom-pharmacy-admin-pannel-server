@@ -1,0 +1,173 @@
+Medicine
+1. Name of the medicine (text field
+2. Strength
+3. Generic name - searchable drop down (I can add or remove
+4. Company name – searchable dropdown (I can add or remove
+5. Price – number field
+6. Strip – number field (How many pieces in a strip
+7. Box – number field (how many strip in a box
+8. Medicine type - searchable dropdown (I can add or remove
+9. উপাদান
+10. নির্দেশনা
+11. মাত্রা ও ব্যবহার বিধি
+12. পার্শ্ব-প্রতিক্রিয়া
+13. গর্ভকালীন ও স্তন্যদানকালীন সময়ে ব্যবহার
+14. সতর্কতা
+
+9 to 14 number is written in bangla
+
+=======================================================================================================
+=======================================================================================================
+
+Roles
+
+1. admin
+2. Order manager
+3. customer care
+4. Accounts
+5. Procurement
+
+=======================================================================================================
+=======================================================================================================
+
+Categories
+
+1.Medicine
+2.Babycare
+3.Beauty & health
+4.Dental material
+5.Eye glass
+
+=======================================================================================================
+=======================================================================================================
+
+Vendor registration
+1. Name of the shop
+2. Type of the shop (searchable dropdown)
+3. Address
+4. Contact number (multiple), need verification
+5. Email, need verification
+6. Set location on google map
+7. Upload Drug license (if the type is pharmacy
+8. Upload owner image
+9. Upload trade license
+
+Delivery boy registration
+1. Name
+2. Pic
+3. NID/ Birth certificate or passport
+4. Date of birth
+5. Present address
+6. Contact number (multiple), need verification
+7. Email, need verification
+
+
+=======================================================================================================
+=======================================================================================================
+
+1	App name: 
+Niraamoy
+2	App type: Pharmacy Multi-vendor
+Platform: Android (React JS, Node JS, Express JS, MY SQL)
+3	Summary
+Users can search a product by medicine name or generic name or category. when start typing, the related product suggestion name will be shown as a drop down. When the user selects a product name or category or type the full name, the lowest priced product in a 2km radius will be shown first, other related products in 2km radius will be shown next and beyond 2km, the specific product and other related products will which is lowest in price will be shown next. When the order is placed, the concerned vendors and a delivery boy will be notified. The order might be placed from multiple vendors. First, our system will search for a single vendor where all the products at the ordered price and quantity are available, if not split the order into multiple vendors. The user cannot see the vendor’s name.
+4	Delivery Charge:
+First 2km	Free
+Next for every 2km up to 10km	BDT 10
+Next for every 2km up to 50km	BDT 5
+
+Users can not order more than 50km away.
+Therefore, the delivery chart will be
+Km up to	Delivery charge
+2	0
+4	10
+6	20
+8	30
+10	40
+12	45
+14	50
+16	55
+18	60
+20	65
+22	70
+24	75
+26	80
+28	85
+30	90
+32	95
+34	100
+36	105
+38	110
+40	115
+42	120
+44	125
+46	130
+48	135
+50	140
+
+5	No of app
+1.	User app
+2.	Admin app
+3.	Vendor app
+4.	Delivery app
+6	User Panel
+6.1.1	Header
+1.	Search
+2.	Product Category
+a.	Medicine
+b.	Babycare
+c.	Beauty & health
+d.	Dental material
+e.	Eyeglass
+Admin can add or remove the category
+3.	User Location: first show the user's current location. But the user can set the location from Google Maps. We will provide the map API.
+4.	Product Filter
+6.2	Home page
+5.	Slide show
+6.	Regular purchase product section
+7.	Most popular
+8.	Offer
+9.	Product list
+6.3	Product details page
+The Medicine product description page will as it is in the link: https://medex.com.bd/brands/2760/osartil-50mg
+
+And
+
+Others like daraz.com 
+
+6.4	Others
+5.	Product rating
+6.	Comments
+7.	Prescription upload
+8.	Live chat
+6.5	Cart
+Like chaldal.com
+6.6	Checkout
+9.	User location (google map)
+10.	Select delivery slot (date and time)
+11.	Others usual features
+12.	Cash on delivery
+13.	Payment gateway (bKash, Nagad, Rocket, Visa card, master card, AmEx card, Nexus pay) 
+6.7	Login
+14.	Mobile number login with verification code
+15.	Users can add email later
+6.8	User account
+16.	Purchase History
+
+All other features use in user panel
+7	Admin Panel
+1.	Add delivery boy
+2.	Add vendor
+3.	Add products
+
+All other features use in user panel
+8	Delivery Panel
+1.	User location and delivery time
+2.	See payment details
+3.	Pickup time and outlet
+
+All other features use in user panel
+
+9	Vendor panel
+1.	Product list
+2.	Product price
