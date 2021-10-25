@@ -1,11 +1,25 @@
 const mongoose = require('mongoose')
 const roles = require('../utils/constants/roles')
 
-const userDetails = mongoose.Schema({
-    name : String,
-    adress : String,
-    other : String,
- });
+
+const UserDetailsSchema = mongoose.Schema({
+    name: String,
+    address: String,
+    other: String,
+},
+    { _id: false }
+)
+
+
+// Only add this role details here , after admin aproves their roles
+// ref id is the object id for the rechord in corresponding collection for that role
+const RolesDetailsSchema = mongoose.Schema({
+    type: String,
+    ref_id: String
+},
+    { _id: false }
+)
+
 
 const UserSchema = mongoose.Schema({
     email: {
@@ -18,31 +32,24 @@ const UserSchema = mongoose.Schema({
         required: true
     },
     // This is the roles user has so that later endpoints will be protected accordingly
+    // Only add roles here if the role is accepted by admin (Only the users with elevated permisions should be added. Others not needed)
     roles: {
-        type: [
-            {
-                type: String,
-            },
-        ],
-        default: [roles.basic_user],
-    },
-    // This is a boolean to detect if the user is accepted by the owner (Customers will be given "true" overiding the default "false" at the time they are created, but they will get only the basic role)
-    accepted: {
-        type: Boolean,
-        required: true,
-        default: false
+        type: [RolesDetailsSchema],
+        default: [{ type: roles.basic, ref_id: '' }]
     },
     email_verified: {
         type: Boolean,
         required: true,
         default: false
     },
-    date: {
-        type: Date,
-        default: Date.now
-    },
+    details: UserDetailsSchema
+},
+    { timestamps: true }
+)
 
-    details: [userDetails]
-})
+const User = mongoose.model('user', UserSchema)
 
-module.exports = mongoose.model('user', UserSchema)
+const RolesDetails = mongoose.model('roles', RolesDetailsSchema)
+const UserDetails = mongoose.model('user_details', UserDetailsSchema)
+
+module.exports = { User, RolesDetails, UserDetails }

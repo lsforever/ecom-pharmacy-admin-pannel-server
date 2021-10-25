@@ -16,6 +16,9 @@ const roles = {
 
     // This is the role given to a delivery boys and other delivery related users ...
     delivery: 'delivery',
+
+    // Order manager
+    order_manager: 'order_manager'
 }
 
 module.exports = roles

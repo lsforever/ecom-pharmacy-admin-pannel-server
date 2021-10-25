@@ -31,17 +31,19 @@ const ProductSchema = mongoose.Schema({
 )
 
 const EyeGlassSchema = mongoose.Schema({
-    eyeglass: {
-        type: String,
-        required: true
+    eye_glass_type: {
+        type: String
     }
 })
 
 const MedicineSchema = mongoose.Schema({
-    medicine: {
-        type: String,
-        required: true
-    }
+    special_name: { type: String },
+    strength: { type: String },
+    medicine_type:[String],
+    strip:{ type: Number },
+    box:{ type: Number },
+    company_name: [String],
+    generic_name:[String]
 })
 
 
@@ -52,4 +54,4 @@ const EyeGlassProduct = Product.discriminator('eye_glass', EyeGlassSchema, optio
 const MedicineProduct = Product.discriminator('medicine', MedicineSchema, options);
 const OtherProduct = Product.discriminator('other', MedicineSchema, options);
 
-module.exports = { EyeGlassProduct ,MedicineProduct, OtherProduct}
+module.exports = { EyeGlassProduct, MedicineProduct, OtherProduct }
