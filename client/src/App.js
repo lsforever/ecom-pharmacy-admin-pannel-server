@@ -7,14 +7,14 @@ function App() {
   return (
     <div className="App">
       <p> aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ksj bshshjsk</p>
-      {/* <Admin
+      <Admin
         dataProvider={restProvider('http://localhost:5000')
         }>
         <Resource name='users' list={UserList} />
         <Resource name='kkkk' list={UserList} />
         <Resource name='lllll' list={UserList} />
         <Resource name='ssssss' list={UserList} />
-      </Admin> */}
+      </Admin>
     </div>
   );
 }
