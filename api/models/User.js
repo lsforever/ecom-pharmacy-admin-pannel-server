@@ -1,6 +1,12 @@
 const mongoose = require('mongoose')
 const roles = require('../utils/constants/roles')
 
+const userDetails = mongoose.Schema({
+    name : String,
+    adress : String,
+    other : String,
+ });
+
 const UserSchema = mongoose.Schema({
     email: {
         type: String,
@@ -26,14 +32,17 @@ const UserSchema = mongoose.Schema({
         required: true,
         default: false
     },
+    email_verified: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     date: {
         type: Date,
         default: Date.now
     },
 
-    details: {
-
-    }
+    details: [userDetails]
 })
 
 module.exports = mongoose.model('user', UserSchema)
