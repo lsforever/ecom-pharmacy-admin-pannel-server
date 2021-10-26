@@ -7,6 +7,14 @@ const ProductSchema = mongoose.Schema({
         type: String,
         required: true
     },
+
+    // This checks the product is accepted by admins
+    flag: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+
     price: {
         type: String,
         required: true

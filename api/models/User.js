@@ -15,7 +15,8 @@ const UserDetailsSchema = mongoose.Schema({
 // ref id is the object id for the rechord in corresponding collection for that role
 const RolesDetailsSchema = mongoose.Schema({
     type: String,
-    ref_id: String
+    ref_id: String,
+    flag: Boolean
 },
     { _id: false }
 )
@@ -35,7 +36,7 @@ const UserSchema = mongoose.Schema({
     // Only add roles here if the role is accepted by admin (Only the users with elevated permisions should be added. Others not needed)
     roles: {
         type: [RolesDetailsSchema],
-        default: [{ type: roles.basic, ref_id: '' }]
+        default: [{ type: roles.basic, ref_id: '' , flag:true}]
     },
     email_verified: {
         type: Boolean,
