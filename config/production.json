@@ -1,5 +1,6 @@
 {
     "mongoURI": "mongodb+srv://admin:admin123@cluster0.zpyqr.mongodb.net/main_database?retryWrites=true&w=majority",
     "jwtSecret": "TheJWTstringSecretForTheApp",
-    "tokenLife": "3600"
+    "tokenLife": "3600000",
+    "apiUrl": "https://mydomain.com/api"
 }

@@ -113,6 +113,7 @@ Km up to	Delivery charge
 2.	Admin app
 3.	Vendor app
 4.	Delivery app
+
 6	User Panel
 6.1.1	Header
 1.	Search
