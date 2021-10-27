@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const roles = require('../utils/constants/roles')
 
 
 const PriceSchema = mongoose.Schema({
@@ -39,11 +40,17 @@ const VendorSchema = mongoose.Schema({
         default: false
     },
 
+    // User ref if available
+    user_ref: {
+        type: String
+    },
+
     // Name of the shop of vendor
     name: {
         type: String,
         required: true,
     },
+    
     // Type of the shop
     type: {
         type: String,
@@ -84,7 +91,7 @@ const VendorSchema = mongoose.Schema({
 VendorSchema.index({ location: "2dsphere" });
 
 
-const Vendor = mongoose.model('vendors', VendorSchema)
+const Vendor = mongoose.model(roles.vendor, VendorSchema)
 
 const VendorProduct = mongoose.model('vendor_products', VendorProductSchema)
 

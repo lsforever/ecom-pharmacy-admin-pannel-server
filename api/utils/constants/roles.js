@@ -15,7 +15,7 @@ const roles = {
     vendor: 'vendor',
 
     // This is the role given to a delivery boys and other delivery related users ...
-    delivery: 'delivery',
+    delivery_person: 'delivery_person',
 
     // Order manager
     order_manager: 'order_manager'
