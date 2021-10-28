@@ -16,7 +16,7 @@ const User = require('../models/User');
 router.get('/', auth,
     async (req, res) => {
         try {
-            let user = await User.findById(req.user.id).select('-password')
+            let user = await User.findById(res.locals.user.id).select('-password')
             if (user) {
                 res.status(200).json(user)
             } else {

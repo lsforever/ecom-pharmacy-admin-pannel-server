@@ -1,6 +1,7 @@
 const generateTokenPayload = (user) => {
 
     const rolesAvailable = user.roles
+        .filter(role => role.flag)
         .map(role => role.type)
 
     const payload = {
@@ -9,7 +10,7 @@ const generateTokenPayload = (user) => {
             roles: rolesAvailable
         }
     }
- 
+
     return payload
 }
 

@@ -5,21 +5,20 @@ const roles = require('../utils/constants/roles')
 const UserDetailsSchema = mongoose.Schema({
     name: String,
     address: String,
-    other: String,
+    birthday: Date,
 },
     { _id: false }
 )
-
 
 // Only add this role details here , after admin aproves their roles
 // ref id is the object id for the rechord in corresponding collection for that role
 const RoleDetailsSchema = mongoose.Schema({
     type: String,
-    ref_id: String
+    ref_id: String,
+    flag:Boolean
 },
     { _id: false }
 )
-
 
 const UserSchema = mongoose.Schema({
     email: {

@@ -7,18 +7,157 @@ const { check, validationResult } = require('express-validator')
 
 const { User } = require('../models/User')
 const { generateTokenPayload } = require('../utils/other/extentions')
+const rolecheck = require('../middlewares/rolecheck')
+const roles = require('../utils/constants/roles')
 const auth = require('../middlewares/auth')
 
-// getList	GET http://my.api.url/posts?sort=["title","ASC"]&range=[0, 24]&filter={"title":"bar"}
-// getOne	GET http://my.api.url/posts/123
-// getMany	GET http://my.api.url/posts?filter={"id":[123,456,789]}
-// getManyReference	GET http://my.api.url/posts?filter={"author_id":345}
-// 01 // create	POST http://my.api.url/posts
-// update	PUT http://my.api.url/posts/123
-// updateMany	Multiple calls to PUT http://my.api.url/posts/123
-// delete	DELETE http://my.api.url/posts/123
-// deleteMany	Multiple calls to DELETE http://my.api.url/posts/123
+const mongoose = require('mongoose')
 
+// 02 getList	                        GET     http://my.api.url/posts?sort=["title","ASC"]&range=[0, 24]&filter={"title":"bar"}
+// 02 getMany	                        GET     http://my.api.url/posts?filter={"_id":[123,456,789]}
+// 02 getManyReference	                GET     http://my.api.url/posts?filter={"author_id":345}
+// 03 getOne	                        GET     http://my.api.url/posts/123
+// 01 // create	                        POST    http://my.api.url/posts
+// 04 update	                        PUT     http://my.api.url/posts/123
+// 04 updateMany(Multiple calls to)     PUT     http://my.api.url/posts/123
+// delete	                            DELETE  http://my.api.url/posts/123
+// deleteMany(Multiple calls to)        DELETE  http://my.api.url/posts/123
+
+
+// 05
+// @route       DELETE api/users
+// @desc        Delete user (Only admins | others can only disable account)
+// @access      Private
+router.put(
+    '/:id',
+    [
+        check('details.birthday', 'Birthday should be a date')
+            .isDate(),
+
+    ],
+    auth,
+    rolecheck([
+        roles.owner,
+        roles.admin
+    ]),
+    async (req, res) => {
+
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() })
+        }
+
+
+        try {
+
+            const { email_verified, details } = req.body
+            let update = {}
+            // Roles will not be edited to true or false from here, It will be updated only within server in corresponding endpoint like vendor or admin  with the client actions.
+            if (res.locals.allowed) {
+                if (email_verified) update.email_verified = email_verified
+            } else if (res.locals.user.id !== req.params.id) {
+                return res.status(401).json({ message: 'Access denied' })
+            }
+
+            if (details.name) update.details.name = details.name
+            if (details.address) update.details.address = details.address
+            if (details.birthday) update.details.birthday = details.birthday
+
+
+            let output = await Model.findByIdAndUpdate(req.params.id, update)
+            res.status(200).json(output)
+
+        } catch (error) {
+            console.error(error.message)
+            res.status(500).send('Server Error')
+        }
+    }
+)
+
+// 04
+// @route       PUT api/users
+// @desc        Update user details (By admins or a user can update his other details after regitering with only email and password)
+// @access      Private
+router.put(
+    '/:id',
+    [
+        check('details.birthday', 'Birthday should be a date')
+            .isDate(),
+
+    ],
+    auth,
+    rolecheck([
+        roles.owner,
+        roles.admin
+    ]),
+    async (req, res) => {
+
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() })
+        }
+
+
+        try {
+
+            const { email_verified, details } = req.body
+            let update = {}
+            // Roles will not be edited to true or false from here, It will be updated only within server in corresponding endpoint like vendor or admin  with the client actions.
+            if (res.locals.allowed) {
+                if (email_verified) update.email_verified = email_verified
+            } else if (res.locals.user.id !== req.params.id) {
+                return res.status(401).json({ message: 'Access denied' })
+            }
+
+            if (details.name) update.details.name = details.name
+            if (details.address) update.details.address = details.address
+            if (details.birthday) update.details.birthday = details.birthday
+
+
+            let output = await Model.findByIdAndUpdate(req.params.id, update)
+            res.status(200).json(output)
+
+        } catch (error) {
+            console.error(error.message)
+            res.status(500).send('Server Error')
+        }
+    }
+)
+
+
+
+// 03
+// @route       GET api/users
+// @desc        Get user by id
+// @access      Private
+// getOne	GET http://my.api.url/posts/123
+router.get('/:id',
+    auth,
+    rolecheck([
+        roles.owner,
+        roles.admin
+    ]),
+    async (req, res) => {
+        try {
+            if (!res.locals.allowed) {
+                return res.status(401).json({ message: 'Access denied' })
+            }
+
+            let user = await User.findById(req.params.id)
+
+            if (user) {
+                res.status(200).json(user)
+            } else {
+                res.status(400).json({ message: 'No such user' })
+            }
+
+
+        } catch (error) {
+            console.error(error.message)
+            res.status(500).send('Server Error')
+        }
+    }
+)
 
 // 01
 // @route       POST api/users
@@ -72,49 +211,45 @@ router.post(
     }
 )
 
-
+// 02
 // @route       GET api/users
 // @desc        Get Users list with sort and filters
 // @access      Private
-router.post(
-    '/',
-    [
-        check('email', 'Email is invalid')
-            .isEmail(),
-        check('password', 'Password should be more than 6 characters')
-            .isLength({ min: 6 }),
-
-    ],
+// getList	    GET http://my.api.url/users?sort={"title","asc||desc"}&range=[0, 24]&filter={"title":"bar"}  // Range 0 = start and 24 = per page limit
+// String Parameters => sort={"title","asc||desc"} || range=[0, 24] || filter={"title":"bar"}
+// getMany	    GET http://my.api.url/posts?filter={"_id":[123,456,789]}   || use (_id) in client 
+// getManyReference	  GET http://my.api.url/posts?filter={"author_id":345}  || Just provide the correct mongodb filter from client and it will work
+// Above can send a filter like this => { 'roles.vendor.ref_id': 'the id here'}
+router.get('/',
+    auth,
+    rolecheck([
+        roles.owner,
+        roles.admin
+    ]),
     async (req, res) => {
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() })
-        }
-
-        const { email, password } = req.body
         try {
-            let user = await User.findOne({ email })
-            if (user) {
-                return res.status(400).json({ message: 'User already exists' })
+            if (!res.locals.allowed) {
+                return res.status(401).json({ message: 'Access denied' })
             }
 
-            user = new User({
-                email,
-                password
-            })
+            const { sort, range, filter } = req.query
+            if (!sort) sort = {}
+            if (!filter) filter = {}
+            if (!range) range = [0, 0]
 
-            const salt = await bcrypt.genSalt(10)
-            user.password = await bcrypt.hash(password, salt)
-            await user.save()
 
-            const payload = generateTokenPayload(user)
+            let users_list = await User
+                .find(filter)
+                .sort(sort)
+                .select('-password')
+                .limit(range[1])
+                .skip(range[0])
 
-            jwt.sign(payload, config.get('jwtSecret'), {
-                expiresIn: config.get('tokenLife')
-            }, (err, token) => {
-                if (err) throw err
-                res.status(200).json({ token })
-            })
+            if (users_list) {
+                res.status(200).json(users_list)
+            } else {
+                res.status(400).json({ message: 'Invalid Query Or No data available' })
+            }
 
 
         } catch (error) {
@@ -126,36 +261,6 @@ router.post(
 
 
 
-
-
-
-// @route       GET api/users
-// @desc        Get logged in user details
-// @access      Private
-// router.get('/', auth,
-//     async (req, res) => {
-//         try {
-//             let user = await User.findById( req.user.id ).select('-password')
-//             if (user) {
-//                 res.status(200).json(user)
-//             }else{
-//                 res.status(400).json({ message: 'Invalid. No such user available' })
-//             }
-
-//         } catch (error) {
-//             console.error(error.message)
-//             res.status(500).send('Server Error')
-
-//         }
-//     }
-// )
-
-
-
-
-// check('name', 'Name is required')
-//             .not()
-//             .isEmpty(),
 
 
 
