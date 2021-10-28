@@ -28,44 +28,37 @@ const mongoose = require('mongoose')
 // @route       DELETE api/users
 // @desc        Delete user (Only admins | others can only disable account)
 // @access      Private
-router.put(
+router.delete(
     '/:id',
-    [
-        check('details.birthday', 'Birthday should be a date')
-            .isDate(),
-
-    ],
     auth,
-    rolecheck([
-        roles.owner,
-        roles.admin
-    ]),
     async (req, res) => {
-
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() })
-        }
-
-
         try {
+            const id = req.params.id
+            const caller = res.locals.user
+            let user = await User.findById(id)
+            const rolesAvailable = user.roles
+                .filter(role => role.flag)
+                .map(role => role.type)
 
-            const { email_verified, details } = req.body
-            let update = {}
-            // Roles will not be edited to true or false from here, It will be updated only within server in corresponding endpoint like vendor or admin  with the client actions.
-            if (res.locals.allowed) {
-                if (email_verified) update.email_verified = email_verified
-            } else if (res.locals.user.id !== req.params.id) {
+            if (caller.roles.includes(roles.owner)) {
+                // Owner
+                if (rolesAvailable.includes(roles.owner)){
+                    return res.status(401).json({ message: 'Access denied' })
+                }else{
+                    let output = await User.findByIdAndDelete(id)
+                    res.status(200).json(output)
+                }
+            } else if (caller.roles.includes(roles.admin)) {
+                // Admin
+                if (rolesAvailable.includes(roles.owner) || rolesAvailable.includes(roles.admin)){
+                    return res.status(401).json({ message: 'Access denied' })
+                }else{
+                    let output = await User.findByIdAndDelete(id)
+                    res.status(200).json(output)
+                }
+            } else {
                 return res.status(401).json({ message: 'Access denied' })
             }
-
-            if (details.name) update.details.name = details.name
-            if (details.address) update.details.address = details.address
-            if (details.birthday) update.details.birthday = details.birthday
-
-
-            let output = await Model.findByIdAndUpdate(req.params.id, update)
-            res.status(200).json(output)
 
         } catch (error) {
             console.error(error.message)
@@ -82,7 +75,8 @@ router.put(
     '/:id',
     [
         check('details.birthday', 'Birthday should be a date')
-            .isDate(),
+            .isDate()
+            .optional({ nullable: true }),
 
     ],
     auth,
@@ -103,6 +97,7 @@ router.put(
             const { email_verified, details } = req.body
             let update = {}
             // Roles will not be edited to true or false from here, It will be updated only within server in corresponding endpoint like vendor or admin  with the client actions.
+            // Therefore admins cannot change owner roles, but can change details of owners. This is a feature. If you don't want that, then fetch the doc and exclude owners before update
             if (res.locals.allowed) {
                 if (email_verified) update.email_verified = email_verified
             } else if (res.locals.user.id !== req.params.id) {
