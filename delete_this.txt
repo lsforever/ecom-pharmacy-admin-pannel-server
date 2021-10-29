@@ -1,6 +1,9 @@
 export NODE_OPTIONS=--openssl-legacy-provider
 
 
+heroku config: set NODE_OPTIONS='--openssl-legacy-provider -a niramoy-admin'
+heroku config:set NODE_OPTIONS="--openssl-legacy-provider"
+
 Medicine
 1. Name of the medicine (text field
 2. Strength
