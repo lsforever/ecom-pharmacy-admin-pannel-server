@@ -8,7 +8,7 @@ const { check, validationResult } = require('express-validator');
 const { generateTokenPayload } = require('../utils/other/extentions')
 const auth = require('../middlewares/auth')
 
-const User = require('../models/User');
+const {User} = require('../models/User');
 
 // @route       GET api/uath
 // @desc        Get logged in user (For a user)
@@ -32,10 +32,10 @@ router.get('/', auth,
 )
 
 
-// @route       POST api/uath
+// @route       POST api/auth
 // @desc        Auth user & get token (Login endpoint)
 // @access      Public
-router.post('/', (req, res) =>
+router.post('/',
     [
         check('email', 'Email Invalid').isEmail(),
         check('password', 'Password required').exists(),
@@ -47,9 +47,14 @@ router.post('/', (req, res) =>
             return res.status(400).json({ errors: errors.array() })
         }
 
+
+
         const { email, password } = req.body
+
+      
         try {
-            let user = await User.findOne({ email })
+
+            let user = await User.findOne({ email }) 
             if (!user) {
                 return res.status(400).json({ msg: 'Invalid Credentials' })
             }
@@ -60,7 +65,7 @@ router.post('/', (req, res) =>
                 return res.status(400).json({ msg: 'Invalid Credentials' })
             }
 
-           
+
             const payload = generateTokenPayload(user)
 
             jwt.sign(payload, config.get('jwtSecret'), {
@@ -75,6 +80,8 @@ router.post('/', (req, res) =>
             res.status(500).send('Server Error')
         }
     })
+
+
 
 
 

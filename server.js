@@ -22,8 +22,8 @@ app.use('/api/test', (req, res) => {
 });
 
 // Define Routes
-app.use('/api/users', require('./api/routes/users'))
 app.use('/api/auth', require('./api/routes/auth'))
+app.use('/api/users', require('./api/routes/users'))
 app.use('/api/products', require('./api/routes/products'))
 
 

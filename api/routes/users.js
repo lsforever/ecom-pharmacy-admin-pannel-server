@@ -42,17 +42,17 @@ router.delete(
 
             if (caller.roles.includes(roles.owner)) {
                 // Owner
-                if (rolesAvailable.includes(roles.owner)){
+                if (rolesAvailable.includes(roles.owner)) {
                     return res.status(401).json({ message: 'Access denied' })
-                }else{
+                } else {
                     let output = await User.findByIdAndDelete(id)
                     res.status(200).json(output)
                 }
             } else if (caller.roles.includes(roles.admin)) {
                 // Admin
-                if (rolesAvailable.includes(roles.owner) || rolesAvailable.includes(roles.admin)){
+                if (rolesAvailable.includes(roles.owner) || rolesAvailable.includes(roles.admin)) {
                     return res.status(401).json({ message: 'Access denied' })
-                }else{
+                } else {
                     let output = await User.findByIdAndDelete(id)
                     res.status(200).json(output)
                 }
@@ -216,31 +216,34 @@ router.post(
 // getManyReference	  GET http://my.api.url/posts?filter={"author_id":345}  || Just provide the correct mongodb filter from client and it will work
 // Above can send a filter like this => { 'roles.vendor.ref_id': 'the id here'}
 router.get('/',
-    auth,
-    rolecheck([
-        roles.owner,
-        roles.admin
-    ]),
+    // auth,
+    // rolecheck([
+    //     roles.owner,
+    //     roles.admin
+    // ]),
     async (req, res) => {
         try {
-            if (!res.locals.allowed) {
-                return res.status(401).json({ message: 'Access denied' })
-            }
+            // if (!res.locals.allowed) {
+            //     return res.status(401).json({ message: 'Access denied' })
+            // }
 
-            const { sort, range, filter } = req.query
-            if (!sort) sort = {}
-            if (!filter) filter = {}
-            if (!range) range = [0, 0]
+            // let { sort, range, filter } = req.query
+            // if (!sort) sort = {}
+            // if (!filter) filter = {}
+            // if (!range) range = [0, 0]
 
 
-            let users_list = await User
-                .find(filter)
-                .sort(sort)
-                .select('-password')
-                .limit(range[1])
-                .skip(range[0])
+            // let users_list = await User
+            //     .find(filter)
+            //     .sort(sort)
+            //     .select('-password')
+            //     .limit(range[1])
+            //     .skip(range[0])
+
+            let users_list = await User.find()
 
             if (users_list) {
+                res.setHeader('Content-Range', `users 0-${users_list.length}/${users_list.length}`)
                 res.status(200).json(users_list)
             } else {
                 res.status(400).json({ message: 'Invalid Query Or No data available' })

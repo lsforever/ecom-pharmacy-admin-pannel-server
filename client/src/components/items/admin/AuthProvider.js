@@ -6,14 +6,22 @@ const authProvider = {
     login: ({ email, password }) => {
         const config = {
             headers: {
-                'Content-Type':'application/json'
+                'Content-Type': 'application/json'
             }
-        } 
+        }
 
-        return axios.get('/api/test', email, config)
+        const body = {
+            email: email,
+            password: password
+        }
+
+        return axios.post('/api/auth', body, config)
             .then(function (response) {
                 // handle success
-                
+                console.log("doing the req")
+                console.log(response)
+                localStorage.setItem('auth', JSON.stringify(response.body));
+
             })
             .catch(function (error) {
                 // handle error
@@ -23,7 +31,7 @@ const authProvider = {
                 // always executed
             });
 
-            
+
         //console.log('https://mydomain.com/authenticate')
         //console.log('process.env.apiUrl')
         // const request = new Request('/api/test', {

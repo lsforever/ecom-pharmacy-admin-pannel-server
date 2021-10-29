@@ -1,10 +1,11 @@
 import React from 'react'
 
-import { Admin as ReactAdmin, Resource } from 'react-admin'
+import { Admin as ReactAdmin, Resource, ListGuesser } from 'react-admin'
 import restProvider from 'ra-data-simple-rest'
 import UserList from '../items/admin/UserList'
 import AuthProvider from '../items/admin/AuthProvider'
 import CustomLoginPage from '../items/admin/LoginPage'
+import DataProvider from '../items/admin/DataProvider'
 
 const Admin = () => {
     return (
@@ -13,7 +14,7 @@ const Admin = () => {
 
             <ReactAdmin
                 title="Niraamoy"
-                dataProvider={ restProvider('http://localhost:5000')}
+                dataProvider={DataProvider}
                 authProvider={AuthProvider}
                 loginPage={CustomLoginPage}
             // dataProvider={dataProviderFactory(
@@ -30,11 +31,12 @@ const Admin = () => {
             >
                
                <Resource name="users" list={UserList} create={UserList} edit={UserList} show={UserList} />
-                <Resource
+               {/* <Resource name="users" list={ListGuesser} /> */}
+                {/* <Resource
                     name="products"
                     {...UserList}
                     options={{ label: 'Orders' }}
-                />
+                /> */}
             </ReactAdmin>
         </div>
     )
