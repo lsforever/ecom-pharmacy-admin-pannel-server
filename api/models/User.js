@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const { owner } = require('../utils/constants/roles')
 const roles = require('../utils/constants/roles')
 
 
@@ -9,6 +10,9 @@ const UserDetailsSchema = mongoose.Schema({
 },
     { _id: false }
 )
+
+
+
 
 // Only add this role details here , after admin aproves their roles
 // ref id is the object id for the rechord in corresponding collection for that role

@@ -216,16 +216,16 @@ router.post(
 // getManyReference	  GET http://my.api.url/posts?filter={"author_id":345}  || Just provide the correct mongodb filter from client and it will work
 // Above can send a filter like this => { 'roles.vendor.ref_id': 'the id here'}
 router.get('/',
-    // auth,
-    // rolecheck([
-    //     roles.owner,
-    //     roles.admin
-    // ]),
+    auth,
+    rolecheck([
+        roles.owner,
+        roles.admin
+    ]),
     async (req, res) => {
         try {
-            // if (!res.locals.allowed) {
-            //     return res.status(401).json({ message: 'Access denied' })
-            // }
+            if (!res.locals.allowed) {
+                return res.status(401).json({ message: 'Access denied' })
+            }
 
             // let { sort, range, filter } = req.query
             // if (!sort) sort = {}

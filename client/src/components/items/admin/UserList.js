@@ -18,6 +18,8 @@ const UserList = (props) => {
                 <TextField source='email'/>
                 <BooleanField source="email_verified" />
                 <DateField source="createdAt" />
+                <EditButton  />
+                <DeleteButton  />
             </Datagrid>
         </List>
     )

@@ -1,10 +1,19 @@
 import { fetchUtils } from 'react-admin';
 import { stringify } from 'query-string';
 
-//const apiUrl = 'http://localhost:3000/api';
-const apiUrl = 'https://niramoy-admin.herokuapp.com/api';
+const apiUrl = 'http://localhost:3000/api';
+//const apiUrl = 'https://niramoy-admin.herokuapp.com/api';
 
-const httpClient = fetchUtils.fetchJson;
+
+
+const fetchJson = (url, options = {}) => {
+    if (!options.headers) {
+        options.headers = new Headers({ Accept: 'application/json' });
+    }
+    // add your own headers here
+    options.headers.set('x-auth-token', localStorage.getItem('auth'));
+    return fetchUtils.fetchJson(url, options);
+}
 
 export default {
     getList: (resource, params) => {
@@ -22,7 +31,7 @@ export default {
         //     data: json,
         //     total: parseInt(headers.get('content-range').split('/').pop(), 10),
         // }));
-        return httpClient(url)
+        return fetchJson(url)
             .then(({ headers, json }) => {
                const obj =  {
 
@@ -31,12 +40,14 @@ export default {
             }
             console.log('getiing data onject below')
             console.log(obj)
+            //const  auth = JSON.parse(localStorage.getItem('auth'))
+            console.log(`Token  = ${localStorage.getItem('auth')}`)
             return obj
         });
     },
 
     getOne: (resource, params) =>
-        httpClient(`${apiUrl}/${resource}/${params.id}`).then(({ json }) => ({
+        fetchJson(`${apiUrl}/${resource}/${params.id}`).then(({ json }) => ({
             data: json,
         })),
 
@@ -45,7 +56,7 @@ export default {
             filter: JSON.stringify({ ids: params.ids }),
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
-        return httpClient(url).then(({ json }) => ({ data: json }));
+        return fetchJson(url).then(({ json }) => ({ data: json }));
     },
 
     getManyReference: (resource, params) => {
@@ -61,14 +72,14 @@ export default {
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
-        return httpClient(url).then(({ headers, json }) => ({
+        return fetchJson(url).then(({ headers, json }) => ({
             data: json,
             total: parseInt(headers.get('content-range').split('/').pop(), 10),
         }));
     },
 
     update: (resource, params) =>
-        httpClient(`${apiUrl}/${resource}/${params.id}`, {
+        fetchJson(`${apiUrl}/${resource}/${params.id}`, {
             method: 'PUT',
             body: JSON.stringify(params.data),
         }).then(({ json }) => ({ data: json })),
@@ -77,14 +88,14 @@ export default {
         const query = {
             filter: JSON.stringify({ id: params.ids }),
         };
-        return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
+        return fetchJson(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'PUT',
             body: JSON.stringify(params.data),
         }).then(({ json }) => ({ data: json }));
     },
 
     create: (resource, params) =>
-        httpClient(`${apiUrl}/${resource}`, {
+        fetchJson(`${apiUrl}/${resource}`, {
             method: 'POST',
             body: JSON.stringify(params.data),
         }).then(({ json }) => ({
@@ -92,7 +103,7 @@ export default {
         })),
 
     delete: (resource, params) =>
-        httpClient(`${apiUrl}/${resource}/${params.id}`, {
+        fetchJson(`${apiUrl}/${resource}/${params.id}`, {
             method: 'DELETE',
         }).then(({ json }) => ({ data: json })),
 
@@ -100,7 +111,7 @@ export default {
         const query = {
             filter: JSON.stringify({ id: params.ids }),
         };
-        return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
+        return fetchJson(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'DELETE',
             body: JSON.stringify(params.data),
         }).then(({ json }) => ({ data: json }));

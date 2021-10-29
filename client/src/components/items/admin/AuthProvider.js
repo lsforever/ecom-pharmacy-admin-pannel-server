@@ -16,19 +16,25 @@ const authProvider = {
         }
 
         return axios.post('/api/auth', body, config)
-            .then(function (response) {
+            .then(function (res) {
                 // handle success
-                console.log("doing the req")
-                console.log(response)
-                localStorage.setItem('auth', JSON.stringify(response.body));
+                if (res.status < 200 || res.status >= 300) {
+                    throw new Error(res.statusText);
+                }
+         
+                return res
 
             })
             .catch(function (error) {
                 // handle error
+
                 console.log(error);
             })
-            .then(function () {
+            .then(function (res) {
                 // always executed
+                localStorage.setItem('auth', res.data.token)
+                //localStorage.setItem('auth', JSON.stringify(res.body.token))
+                return res
             });
 
 

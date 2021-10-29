@@ -11,7 +11,9 @@ const CustomLoginPage = ({ theme }) => {
     const notify = useNotify();
     const submit = (e) => {
         e.preventDefault();
-        login({ email, password }).catch(() => notify('Invalid email or password'));
+        login({ email, password }).catch(() => {
+            notify('Inavalid Credentials','Login Failed')
+        });
     };
 
     return (
