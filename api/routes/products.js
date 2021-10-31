@@ -349,8 +349,9 @@ router.get('/',
 
             if (product_list) {
                 const count = await Product.countDocuments()
-                // const header = `users ${range[0] + 1}-${product_list.length + range[0]}/${count}`
-                // res.setHeader('Content-Range', header)
+                //const header = `users ${range[0] + 1}-${product_list.length + range[0]}/${count}`
+                const header = `products ${0 + 1}-${product_list.length + 0}/${count}`
+                res.setHeader('Content-Range', header)
                 res.status(200).json(product_list)
             } else {
                 res.status(400).json({ message: 'Invalid Query Or No data available' })
@@ -359,7 +360,6 @@ router.get('/',
 
 
         } catch (error) {
-            console.error(error)
             console.error(error.message)
             res.status(500).send('Server Error')
         }
