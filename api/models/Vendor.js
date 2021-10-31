@@ -2,13 +2,25 @@ const mongoose = require('mongoose')
 const roles = require('../utils/constants/roles')
 
 
+// const PriceSchema = mongoose.Schema({
+//     major: {
+//         type: Number,
+//         required: true,
+//         default: 0
+//     },
+//     minor: {
+//         type: Number,
+//         required: true,
+//         default: 0
+//     },
+//     currency: {
+//         type: String,
+//         default: 'BDT'
+//     }
+// })
+
 const PriceSchema = mongoose.Schema({
-    major: {
-        type: Number,
-        required: true,
-        default: 0
-    },
-    minor: {
+    amount: {
         type: Number,
         required: true,
         default: 0
@@ -18,6 +30,7 @@ const PriceSchema = mongoose.Schema({
         default: 'BDT'
     }
 })
+
 
 const VendorProductSchema = mongoose.Schema({
     price: PriceSchema,

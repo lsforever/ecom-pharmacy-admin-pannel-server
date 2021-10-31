@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
+// const bcrypt = require('bcryptjs')
+// const jwt = require('jsonwebtoken')
 const config = require('config')
 const { check, validationResult } = require('express-validator')
 
@@ -22,10 +22,10 @@ const mongoose = require('mongoose')
 // 04 update	                        PUT     http://my.api.url/posts/123
 // 04 updateMany(Multiple calls to)     PUT     http://my.api.url/posts/123
 // 05 delete	                        DELETE  http://my.api.url/posts/123
-// 05 deleteMany(Multiple calls to)     DELETE  http://my.api.url/posts/123
+// 06 deleteMany(Filter calls to)       DELETE  http://my.api.url/posts/123
 
 
-// 05
+// 06
 // @route       DELETE api/users?
 // @desc        Delete many user (Only admins | others can only disable account)
 // @access      Private
@@ -38,64 +38,89 @@ router.delete(
             //Site.deleteMany({ _id: [1, 2, 3] });
             const filter = JSON.parse(req.query.filter)
             let ids;
-            if(filter){
+            if (filter) {
                 ids = filter._id
+            } else {
+                return res.status(400).json({ message: '_ids cannot be empty' })
             }
-            
-            console.log("ids  log here ")
-            console.log(filter)
+
+          
+
+            const caller = res.locals.user
+          
+            let mapped_ids = ids.map(id => mongoose.Types.ObjectId(id))
+
+            let query = {
+                'roles.type': { $eq: "null" }
+            }
+
+
+
+            if (caller.roles.includes(roles.owner)) {
+                query = {
+                    $and: [
+                        {
+                            '_id': {
+                                $in: mapped_ids
+                            }
+                        }
+                        ,
+                        {
+                            'roles.type': { $ne: "owner" }
+                        }
+    
+                    ]
+    
+                }
+
+            } else if (caller.roles.includes(roles.admin)) {
+                query = {
+                    $and: [
+                        {
+                            '_id': {
+                                $in: mapped_ids
+                            }
+                        }
+                        ,
+                        {
+                            'roles.type': { $ne: "owner" }
+                        },
+                        {
+                            'roles.type': { $ne: "admin" }
+                        }
+    
+                    ]
+    
+                }
+            } else {
+                return res.status(401).json({ message: 'Access denied' })
+            }
+            let count = await User.deleteMany(query)
+
+
+
+            if (count != mapped_ids.length) {
+                let available = await User.find(
+                    {
+                        '_id': {
+                            $in: mapped_ids
+                        }
+                    }
+                    ,
+                    '_id'
+                )
+                available = available.map(item => item._id.toString())
+
+                ids = ids.filter(function (el) {
+                    return !available.includes(el);
+                })
+                console.log(mapped_ids)
+                console.log(available)
+            }
+            console.log(count)
             console.log(ids)
-            let del = await User.deleteMany({ _id: ids })
-            console.log("del  log here ")
-            console.log(del)
+
             res.status(200).json({_ids :ids})
-            //console.log(del)
-            // const caller = res.locals.user
-            // let user = await User.findById(id)
-            // const rolesAvailable = user.roles
-            //     .filter(role => role.flag)
-            //     .map(role => role.type)
-
-            // if (caller.roles.includes(roles.owner)) {
-            //     // Owner
-            //     if (rolesAvailable.includes(roles.owner)) {
-            //         return res.status(401).json({ message: 'Access denied' })
-            //     } else {
-            //         let output = await User.findByIdAndDelete(id)
-            //         res.status(200).json(output)
-            //     }
-            // } else if (caller.roles.includes(roles.admin)) {
-            //     // Admin
-            //     if (rolesAvailable.includes(roles.owner) || rolesAvailable.includes(roles.admin)) {
-            //         return res.status(401).json({ message: 'Access denied' })
-            //     } else {
-            //         let output = await User.findByIdAndDelete(id)
-            //         res.status(200).json(output)
-            //     }
-            // } else {
-            //     return res.status(401).json({ message: 'Access denied' })
-            // }
-            
-            // model.find({
-            //     $and: [
-            //         {
-            //             '_id': {
-            //                 $in: [
-            //                     mongoose.Types.ObjectId('4ed3ede8844f0f351100000c'),
-            //                     mongoose.Types.ObjectId('4ed3f117a844e0471100000d'),
-            //                     mongoose.Types.ObjectId('4ed3f18132f50c491100000e')
-            //                 ]
-            //             }
-            //         }
-            //         ,
-            //         { 
-            //             sector: "Some Sector $ne" 
-            //         }
-            //     ]
-
-            // }, function (err, docs) {
-            //     console.log(docs);
-            // });
 
 
 
@@ -418,57 +443,57 @@ router.get('/',
 
 
 
-// 01
-// @route       POST api/users
-// @desc        Register a user (create a user)
-// @access      Public
-router.post(
-    '/',
-    [
-        check('email', 'Email is invalid')
-            .isEmail(),
-        check('password', 'Password should be more than 6 characters')
-            .isLength({ min: 6 }),
+// // 01
+// // @route       POST api/users
+// // @desc        Register a user (create a user)
+// // @access      Public
+// router.post(
+//     '/',
+//     [
+//         check('email', 'Email is invalid')
+//             .isEmail(),
+//         check('password', 'Password should be more than 6 characters')
+//             .isLength({ min: 6 }),
 
-    ],
-    async (req, res) => {
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() })
-        }
+//     ],
+//     async (req, res) => {
+//         const errors = validationResult(req)
+//         if (!errors.isEmpty()) {
+//             return res.status(400).json({ errors: errors.array() })
+//         }
 
-        const { email, password } = req.body
-        try {
-            let user = await User.findOne({ email })
-            if (user) {
-                return res.status(400).json({ message: 'User already exists' })
-            }
+//         const { email, password } = req.body
+//         try {
+//             let user = await User.findOne({ email })
+//             if (user) {
+//                 return res.status(400).json({ message: 'User already exists' })
+//             }
 
-            user = new User({
-                email,
-                password
-            })
+//             user = new User({
+//                 email,
+//                 password
+//             })
 
-            const salt = await bcrypt.genSalt(10)
-            user.password = await bcrypt.hash(password, salt)
-            await user.save()
+//             const salt = await bcrypt.genSalt(10)
+//             user.password = await bcrypt.hash(password, salt)
+//             await user.save()
 
-            const payload = generateTokenPayload(user)
+//             const payload = generateTokenPayload(user)
 
-            jwt.sign(payload, config.get('jwtSecret'), {
-                expiresIn: config.get('tokenLife')
-            }, (err, token) => {
-                if (err) throw err
-                res.status(200).json({ token, _id: user._id })
-            })
+//             jwt.sign(payload, config.get('jwtSecret'), {
+//                 expiresIn: config.get('tokenLife')
+//             }, (err, token) => {
+//                 if (err) throw err
+//                 res.status(200).json({ token, _id: user._id })
+//             })
 
 
-        } catch (error) {
-            console.error(error.message)
-            res.status(500).send('Server Error')
-        }
-    }
-)
+//         } catch (error) {
+//             console.error(error.message)
+//             res.status(500).send('Server Error')
+//         }
+//     }
+// )
 
 
 

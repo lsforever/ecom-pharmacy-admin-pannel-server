@@ -15,6 +15,7 @@ const ProductSchema = mongoose.Schema({
         default: false
     },
 
+    // This is just a markup price (In Strings not for use in transactions)
     price: {
         type: String,
         required: true
@@ -44,6 +45,11 @@ const EyeGlassSchema = mongoose.Schema({
     }
 })
 
+const OtherSchema = mongoose.Schema({
+    other: {
+        type: String
+    }
+})
 const MedicineSchema = mongoose.Schema({
     special_name: { type: String },
     strength: { type: String },
@@ -51,7 +57,7 @@ const MedicineSchema = mongoose.Schema({
     strip:{ type: Number },
     box:{ type: Number },
     company_name: [String],
-    generic_name:[String]
+    generic_name: [String]
 })
 
 
@@ -60,6 +66,6 @@ const Product = mongoose.model('product', ProductSchema)
 
 const EyeGlassProduct = Product.discriminator('eye_glass', EyeGlassSchema, options);
 const MedicineProduct = Product.discriminator('medicine', MedicineSchema, options);
-const OtherProduct = Product.discriminator('other', MedicineSchema, options);
+const OtherProduct = Product.discriminator('other', OtherSchema, options);
 
-module.exports = { EyeGlassProduct, MedicineProduct, OtherProduct }
+module.exports = {Product, EyeGlassProduct, MedicineProduct, OtherProduct }

@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-    Create,
     Edit,
     SimpleForm,
     TextInput,
