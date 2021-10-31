@@ -16,13 +16,37 @@ const fetchJson = (url, options = {}) => {
 }
 
 export default {
+    //done
     getList: (resource, params) => {
         const { page, perPage } = params.pagination;
-        const { field, order } = params.sort;
+        let { field, order } = params.sort;
+        let filter = params.filter;
+
+        //order = order.toLowerCase()
+        // if (filter.id) {
+        //     filter._id = filter.id
+        //     delete filter.id
+        // }
+
+        if (field === 'id') {
+            field = '_id'
+        }
+
+
+        if (filter.id) {
+            filter._id = filter.id
+            delete filter.id
+        }
+        // else {
+            
+        // }
+
+
+
         const query = {
-            sort: JSON.stringify([field, order]),
-            range: JSON.stringify([(page - 1) * perPage, page * perPage - 1]),
-            filter: JSON.stringify(params.filter),
+            sort: JSON.stringify({ [field]: order.toLowerCase() }),
+            range: JSON.stringify([(page - 1) * perPage, perPage]),
+            filter: JSON.stringify(filter),
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
@@ -31,25 +55,33 @@ export default {
         //     data: json,
         //     total: parseInt(headers.get('content-range').split('/').pop(), 10),
         // }));
+
+
+
         return fetchJson(url)
             .then(({ headers, json }) => {
-               const obj =  {
+                const obj = {
 
-                data: json.map(resource => ({ ...resource, id: resource._id }) ),
-                total: parseInt(headers.get('content-range').split('/').pop(), 10),
-            }
-            console.log('getiing data onject below')
-            console.log(obj)
-            //const  auth = JSON.parse(localStorage.getItem('auth'))
-            console.log(`Token  = ${localStorage.getItem('auth')}`)
-            return obj
-        });
+                    data: json.map(resource => ({ ...resource, id: resource._id })),
+                    total: parseInt(headers.get('content-range').split('/').pop(), 10),
+                }
+
+                return obj
+            });
     },
 
+    //done
     getOne: (resource, params) =>
-        fetchJson(`${apiUrl}/${resource}/${params.id}`).then(({ json }) => ({
-            data: json,
-        })),
+        fetchJson(`${apiUrl}/${resource}/${params.id}`).then(({ json }) => {
+            const obj = {
+                data: json
+            }
+
+            obj.data.id = obj.data._id
+            delete obj.data._id
+            return obj
+
+        }),
 
     getMany: (resource, params) => {
         const query = {
@@ -78,11 +110,14 @@ export default {
         }));
     },
 
+    // done
     update: (resource, params) =>
         fetchJson(`${apiUrl}/${resource}/${params.id}`, {
             method: 'PUT',
             body: JSON.stringify(params.data),
-        }).then(({ json }) => ({ data: json })),
+        }).then(({ json }) => ({
+            data: { ...json, id: json._id },
+         })),
 
     updateMany: (resource, params) => {
         const query = {
@@ -94,26 +129,29 @@ export default {
         }).then(({ json }) => ({ data: json }));
     },
 
+    //done
     create: (resource, params) =>
         fetchJson(`${apiUrl}/${resource}`, {
             method: 'POST',
             body: JSON.stringify(params.data),
         }).then(({ json }) => ({
-            data: { ...params.data, id: json.id },
+            data: { ...params.data, id: json._id },
         })),
 
+    //done
     delete: (resource, params) =>
         fetchJson(`${apiUrl}/${resource}/${params.id}`, {
             method: 'DELETE',
         }).then(({ json }) => ({ data: json })),
 
+    //done
     deleteMany: (resource, params) => {
         const query = {
-            filter: JSON.stringify({ id: params.ids }),
+            filter: JSON.stringify({ _id: params.ids }),
         };
         return fetchJson(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'DELETE',
             body: JSON.stringify(params.data),
-        }).then(({ json }) => ({ data: json }));
+        }).then(({ json }) => ({ data: json._ids }));
     },
 };

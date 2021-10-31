@@ -13,6 +13,7 @@ const auth = require('../middlewares/auth')
 
 const mongoose = require('mongoose')
 
+
 // 02 getList	                        GET     http://my.api.url/posts?sort=["title","ASC"]&range=[0, 24]&filter={"title":"bar"}
 // 02 getMany	                        GET     http://my.api.url/posts?filter={"_id":[123,456,789]}
 // 02 getManyReference	                GET     http://my.api.url/posts?filter={"author_id":345}
@@ -20,8 +21,90 @@ const mongoose = require('mongoose')
 // 01 // create	                        POST    http://my.api.url/posts
 // 04 update	                        PUT     http://my.api.url/posts/123
 // 04 updateMany(Multiple calls to)     PUT     http://my.api.url/posts/123
-// delete	                            DELETE  http://my.api.url/posts/123
-// deleteMany(Multiple calls to)        DELETE  http://my.api.url/posts/123
+// 05 delete	                        DELETE  http://my.api.url/posts/123
+// 05 deleteMany(Multiple calls to)     DELETE  http://my.api.url/posts/123
+
+
+// 05
+// @route       DELETE api/users?
+// @desc        Delete many user (Only admins | others can only disable account)
+// @access      Private
+// Params       DELETE api/users?filter={"_id":[123,456,789]}
+router.delete(
+    '/',
+    auth,
+    async (req, res) => {
+        try {
+            //Site.deleteMany({ _id: [1, 2, 3] });
+            const filter = JSON.parse(req.query.filter)
+            let ids;
+            if(filter){
+                ids = filter._id
+            }
+            
+            console.log("ids  log here ")
+            console.log(filter)
+            console.log(ids)
+            let del = await User.deleteMany({ _id: ids })
+            console.log("del  log here ")
+            console.log(del)
+            res.status(200).json({_ids :ids})
+            //console.log(del)
+            // const caller = res.locals.user
+            // let user = await User.findById(id)
+            // const rolesAvailable = user.roles
+            //     .filter(role => role.flag)
+            //     .map(role => role.type)
+
+            // if (caller.roles.includes(roles.owner)) {
+            //     // Owner
+            //     if (rolesAvailable.includes(roles.owner)) {
+            //         return res.status(401).json({ message: 'Access denied' })
+            //     } else {
+            //         let output = await User.findByIdAndDelete(id)
+            //         res.status(200).json(output)
+            //     }
+            // } else if (caller.roles.includes(roles.admin)) {
+            //     // Admin
+            //     if (rolesAvailable.includes(roles.owner) || rolesAvailable.includes(roles.admin)) {
+            //         return res.status(401).json({ message: 'Access denied' })
+            //     } else {
+            //         let output = await User.findByIdAndDelete(id)
+            //         res.status(200).json(output)
+            //     }
+            // } else {
+            //     return res.status(401).json({ message: 'Access denied' })
+            // }
+            
+            // model.find({
+            //     $and: [
+            //         {
+            //             '_id': {
+            //                 $in: [
+            //                     mongoose.Types.ObjectId('4ed3ede8844f0f351100000c'),
+            //                     mongoose.Types.ObjectId('4ed3f117a844e0471100000d'),
+            //                     mongoose.Types.ObjectId('4ed3f18132f50c491100000e')
+            //                 ]
+            //             }
+            //         }
+            //         ,
+            //         { 
+            //             sector: "Some Sector $ne" 
+            //         }
+            //     ]
+
+            // }, function (err, docs) {
+            //     console.log(docs);
+            // });
+
+
+
+        } catch (error) {
+            console.error(error.message)
+            res.status(500).send('Server Error')
+        }
+    }
+)
 
 
 // 05
@@ -76,6 +159,9 @@ router.put(
     [
         check('details.birthday', 'Birthday should be a date')
             .isDate()
+            .optional({ checkFalsy: true }),
+        check('email_verified', 'Email Verified should be a boolean')
+            .isBoolean()
             .optional({ nullable: true }),
 
     ],
@@ -92,10 +178,13 @@ router.put(
         }
 
 
+
         try {
 
             const { email_verified, details } = req.body
+
             let update = {}
+
             // Roles will not be edited to true or false from here, It will be updated only within server in corresponding endpoint like vendor or admin  with the client actions.
             // Therefore admins cannot change owner roles, but can change details of owners. This is a feature. If you don't want that, then fetch the doc and exclude owners before update
             if (res.locals.allowed) {
@@ -104,15 +193,19 @@ router.put(
                 return res.status(401).json({ message: 'Access denied' })
             }
 
-            if (details.name) update.details.name = details.name
-            if (details.address) update.details.address = details.address
-            if (details.birthday) update.details.birthday = details.birthday
+            if (details.name) {
+                update['details.name'] = details.name
+            }
+            if (details.address) update['details.address'] = details.address
+            if (details.birthday) update['details.birthday'] = details.birthday
 
 
-            let output = await Model.findByIdAndUpdate(req.params.id, update)
+
+            let output = await User.findByIdAndUpdate(req.params.id, update)
             res.status(200).json(output)
 
         } catch (error) {
+            console.error(error)
             console.error(error.message)
             res.status(500).send('Server Error')
         }
@@ -195,7 +288,7 @@ router.post(
                 expiresIn: config.get('tokenLife')
             }, (err, token) => {
                 if (err) throw err
-                res.status(200).json({ token })
+                res.status(200).json({ token, _id: user._id })
             })
 
 
@@ -227,27 +320,147 @@ router.get('/',
                 return res.status(401).json({ message: 'Access denied' })
             }
 
-            // let { sort, range, filter } = req.query
-            // if (!sort) sort = {}
-            // if (!filter) filter = {}
-            // if (!range) range = [0, 0]
 
 
-            // let users_list = await User
-            //     .find(filter)
-            //     .sort(sort)
-            //     .select('-password')
-            //     .limit(range[1])
-            //     .skip(range[0])
 
-            let users_list = await User.find()
+            let { sort, range, filter } = req.query
+
+            if (range) range = JSON.parse(range)
+            if (sort) sort = JSON.parse(sort)
+            if (filter) filter = JSON.parse(filter)
+
+
+
+            // Supported filters
+            // id
+
+            // Supported regex filters
+            // email
+            // details.name
+            // details.address
+            if (filter) {
+                if (filter.email) {
+                    filter.email = {
+                        $regex: filter.email,
+                        $options: "i"
+                    }
+
+                }
+                if (filter.details) {
+                    if (filter.details.name) {
+
+                        filter['details.name'] = {
+                            $regex: filter.details.name,
+                            $options: "i"
+                        }
+
+                    }
+                    if (filter.details.address) {
+
+                        filter['details.address'] = {
+                            $regex: filter.details.address,
+                            $options: "i"
+                        }
+
+                    }
+
+                    delete filter.details
+                }
+            }
+
+
+
+
+            if (!sort) {
+                sort = {}
+            }
+            if (!filter) {
+                filter = {}
+            } else {
+                if (filter._id) {
+                    if (!mongoose.isValidObjectId(filter._id)) {
+                        delete filter._id
+                    }
+                }
+            }
+            if (!range) {
+                range = [0, 0]
+            }
+
+
+
+            let users_list = await User
+                .find(filter)
+                .sort(sort)
+                .select('-password')
+                .skip(range[0])
+                .limit(range[1])
+
 
             if (users_list) {
-                res.setHeader('Content-Range', `users 0-${users_list.length}/${users_list.length}`)
+                const count = await User.countDocuments()
+                const header = `users ${range[0] + 1}-${users_list.length + range[0]}/${count}`
+                res.setHeader('Content-Range', header)
                 res.status(200).json(users_list)
             } else {
                 res.status(400).json({ message: 'Invalid Query Or No data available' })
             }
+
+
+
+        } catch (error) {
+            console.error(error)
+            console.error(error.message)
+            res.status(500).send('Server Error')
+        }
+    }
+)
+
+
+
+// 01
+// @route       POST api/users
+// @desc        Register a user (create a user)
+// @access      Public
+router.post(
+    '/',
+    [
+        check('email', 'Email is invalid')
+            .isEmail(),
+        check('password', 'Password should be more than 6 characters')
+            .isLength({ min: 6 }),
+
+    ],
+    async (req, res) => {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() })
+        }
+
+        const { email, password } = req.body
+        try {
+            let user = await User.findOne({ email })
+            if (user) {
+                return res.status(400).json({ message: 'User already exists' })
+            }
+
+            user = new User({
+                email,
+                password
+            })
+
+            const salt = await bcrypt.genSalt(10)
+            user.password = await bcrypt.hash(password, salt)
+            await user.save()
+
+            const payload = generateTokenPayload(user)
+
+            jwt.sign(payload, config.get('jwtSecret'), {
+                expiresIn: config.get('tokenLife')
+            }, (err, token) => {
+                if (err) throw err
+                res.status(200).json({ token, _id: user._id })
+            })
 
 
         } catch (error) {
@@ -256,6 +469,7 @@ router.get('/',
         }
     }
 )
+
 
 
 

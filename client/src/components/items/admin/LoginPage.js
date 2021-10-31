@@ -13,6 +13,7 @@ const CustomLoginPage = ({ theme }) => {
         e.preventDefault();
         login({ email, password }).catch(() => {
             notify('Inavalid Credentials','Login Failed')
+            //notify("Inavalid Credentials", { ...restOfArguments })
         });
     };
 

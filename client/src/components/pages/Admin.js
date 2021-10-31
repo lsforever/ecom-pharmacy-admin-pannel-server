@@ -6,6 +6,9 @@ import UserList from '../items/admin/UserList'
 import AuthProvider from '../items/admin/AuthProvider'
 import CustomLoginPage from '../items/admin/LoginPage'
 import DataProvider from '../items/admin/DataProvider'
+import UserEdit from '../items/admin/UserEdit'
+import UserCreate from '../items/admin/UserCreate'
+
 
 const Admin = () => {
     return (
@@ -29,9 +32,9 @@ const Admin = () => {
             // i18nProvider={i18nProvider}
             // disableTelemetry
             >
-               
-               <Resource name="users" list={UserList} create={UserList} edit={UserList} show={UserList} />
-               {/* <Resource name="users" list={ListGuesser} /> */}
+
+                <Resource name="users" list={UserList} create={UserCreate} edit={UserEdit} show={UserList} />
+                {/* <Resource name="users" list={ListGuesser} /> */}
                 {/* <Resource
                     name="products"
                     {...UserList}
