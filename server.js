@@ -28,6 +28,7 @@ app.use('/api/test', (req, res) => {
 app.use('/api/auth', require('./api/routes/auth'))
 app.use('/api/users', require('./api/routes/users'))
 app.use('/api/products', require('./api/routes/products'))
+app.use('/api/product-categories', require('./api/routes/product_categories'))
 
 
 

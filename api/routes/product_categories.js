@@ -3,7 +3,7 @@ const router = express.Router()
 
 const { check, validationResult } = require('express-validator')
 
-const {Product, EyeGlassProduct, MedicineProduct, OtherProduct } = require('../models/ProductCategory')
+const ProductCategory = require('../models/ProductCategory')
 const rolecheck = require('../middlewares/rolecheck')
 const roles = require('../utils/constants/roles')
 const auth = require('../middlewares/auth')

@@ -4,28 +4,31 @@ import {
     SimpleForm,
     TextInput,
     DateInput,
-    LongTextInput,
-    ReferenceManyField,
     BooleanInput,
-    Datagrid,
-    TextField,
-    DateField,
-    EditButton
+    // TopToolbar,
+    // ShowButton,
+    // ListButton
 } from 'react-admin';
 
+// const UserEditActions = ({ basePath, data }) => (
+//     <TopToolbar>
+//         <ListButton basePath={basePath} />
+//         <ShowButton basePath={basePath} record={data} />
+//     </TopToolbar>
+// )
 
 const UserEdit = (props) => {
     return (
-        <Edit  {...props}>
+        // <Edit actions={<UserEditActions />}  {...props} >
+        <Edit  {...props} >
             <SimpleForm>
                 <TextInput disabled label="Id" source="id" />
                 <TextInput disabled label="Email" source="email" />
                 <BooleanInput label="Email Verified" source="email_verified" />
-                <TextInput source="details.name"/>
-                <TextInput source="details.address"/>
-                <DateInput source="details.birthday"  />
-             
-                
+                <TextInput source="details.name" />
+                <TextInput source="details.address" />
+                <DateInput source="details.birthday" />
+
             </SimpleForm>
         </Edit>
     )

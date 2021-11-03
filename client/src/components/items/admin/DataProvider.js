@@ -1,8 +1,8 @@
 import { fetchUtils } from 'react-admin'
 import { stringify } from 'query-string'
 
-//const apiUrl = 'http://localhost:3000/api'
-const apiUrl = 'https://niramoy-admin.herokuapp.com/api'
+const apiUrl = 'http://localhost:3000/api'
+//const apiUrl = 'https://niramoy-admin.herokuapp.com/api'
 
 
 
@@ -38,7 +38,7 @@ export default {
             delete filter.id
         }
         // else {
-            
+
         // }
 
 
@@ -60,14 +60,14 @@ export default {
 
         return fetchJson(url)
             .then(({ headers, json }) => {
-                
-            
+
+
                 const obj = {
 
                     data: json.map(resource => ({ ...resource, id: resource._id })),
                     total: parseInt(headers.get('content-range').split('/').pop(), 10),
                 }
-                
+
 
                 return obj
             });
@@ -120,7 +120,7 @@ export default {
             body: JSON.stringify(params.data),
         }).then(({ json }) => ({
             data: { ...json, id: json._id },
-         })),
+        })),
 
     updateMany: (resource, params) => {
         const query = {

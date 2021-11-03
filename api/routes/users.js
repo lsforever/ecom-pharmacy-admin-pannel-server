@@ -114,11 +114,7 @@ router.delete(
                 ids = ids.filter(function (el) {
                     return !available.includes(el);
                 })
-                console.log(mapped_ids)
-                console.log(available)
             }
-            console.log(count)
-            console.log(ids)
 
             res.status(200).json({_ids :ids})
 
@@ -154,6 +150,7 @@ router.delete(
                     return res.status(401).json({ message: 'Access denied' })
                 } else {
                     let output = await User.findByIdAndDelete(id)
+           
                     res.status(200).json(output)
                 }
             } else if (caller.roles.includes(roles.admin)) {
@@ -162,6 +159,7 @@ router.delete(
                     return res.status(401).json({ message: 'Access denied' })
                 } else {
                     let output = await User.findByIdAndDelete(id)
+           
                     res.status(200).json(output)
                 }
             } else {
@@ -230,7 +228,6 @@ router.put(
             res.status(200).json(output)
 
         } catch (error) {
-            console.error(error)
             console.error(error.message)
             res.status(500).send('Server Error')
         }
@@ -256,7 +253,7 @@ router.get('/:id',
                 return res.status(401).json({ message: 'Access denied' })
             }
 
-            let user = await User.findById(req.params.id)
+            let user = await User.findById(req.params.id).select('-password')
 
             if (user) {
                 res.status(200).json(user)
@@ -354,16 +351,22 @@ router.get('/',
             if (sort) sort = JSON.parse(sort)
             if (filter) filter = JSON.parse(filter)
 
+            
 
 
-            // Supported filters
+            // Supported normal filters
             // id
+            // roles.type
 
             // Supported regex filters
             // email
             // details.name
             // details.address
             if (filter) {
+                if (filter.roles) {
+                    filter['roles.type'] = filter.roles.type
+                    delete filter.roles 
+                }
                 if (filter.email) {
                     filter.email = {
                         $regex: filter.email,
@@ -391,6 +394,12 @@ router.get('/',
 
                     delete filter.details
                 }
+
+                if (filter._id) {
+                    if (!mongoose.isValidObjectId(filter._id)) {
+                        delete filter._id
+                    }
+                }
             }
 
 
@@ -401,12 +410,6 @@ router.get('/',
             }
             if (!filter) {
                 filter = {}
-            } else {
-                if (filter._id) {
-                    if (!mongoose.isValidObjectId(filter._id)) {
-                        delete filter._id
-                    }
-                }
             }
             if (!range) {
                 range = [0, 0]

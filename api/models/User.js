@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const { owner } = require('../utils/constants/roles')
 const roles = require('../utils/constants/roles')
 
 
