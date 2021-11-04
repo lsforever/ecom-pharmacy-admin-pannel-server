@@ -1,8 +1,16 @@
 import { fetchUtils } from 'react-admin'
 import { stringify } from 'query-string'
 
-const apiUrl = 'http://localhost:3000/api'
+//const apiUrl = 'http://localhost:3000/api'
 //const apiUrl = 'https://niramoy-admin.herokuapp.com/api'
+
+let apiUrl
+
+if (process.env.NODE_ENV === 'production') {
+    apiUrl = 'https://niramoy-admin.herokuapp.com/api'
+}else{
+    apiUrl = 'http://localhost:3000/api'
+}
 
 
 
@@ -86,12 +94,14 @@ export default {
 
         }),
 
+
+    //done
     getMany: (resource, params) => {
         const query = {
             filter: JSON.stringify({ ids: params.ids }),
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
-        return fetchJson(url).then(({ json }) => ({ data: json }));
+        return fetchJson(url).then(({ json }) => ({ data: json.map(resource => ({ ...resource, id: resource._id })) }));
     },
 
     getManyReference: (resource, params) => {

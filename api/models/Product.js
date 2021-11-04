@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const options = { discriminatorKey: 'type' }
+const options = { discriminatorKey: 'kind' }
 
 const ProductSchema = mongoose.Schema({
     name: {
@@ -18,11 +18,10 @@ const ProductSchema = mongoose.Schema({
     // This is just a markup price (In Strings not for use in transactions)
     price: {
         type: String,
-        required: true
     },
     category: {
-        type: mongoose.Types.ObjectId, 
-        ref:'product_category'
+        type: mongoose.Types.ObjectId,
+        ref: 'product_category'
     },
     images: [String],
     brand: {
@@ -36,7 +35,9 @@ const ProductSchema = mongoose.Schema({
         default: "n/a"
     }
 },
-    options
+
+    { ...options, timestamps: true }
+
 )
 
 const EyeGlassSchema = mongoose.Schema({
@@ -45,7 +46,7 @@ const EyeGlassSchema = mongoose.Schema({
     }
 })
 
-const OtherSchema = mongoose.Schema({
+const NormalSchema = mongoose.Schema({
     other: {
         type: String
     }
@@ -53,9 +54,9 @@ const OtherSchema = mongoose.Schema({
 const MedicineSchema = mongoose.Schema({
     special_name: { type: String },
     strength: { type: String },
-    medicine_type:[String],
-    strip:{ type: Number },
-    box:{ type: Number },
+    medicine_type: [String],
+    strip: { type: Number },
+    box: { type: Number },
     company_name: [String],
     generic_name: [String]
 })
@@ -66,6 +67,6 @@ const Product = mongoose.model('product', ProductSchema)
 
 const EyeGlassProduct = Product.discriminator('eye_glass', EyeGlassSchema, options);
 const MedicineProduct = Product.discriminator('medicine', MedicineSchema, options);
-const OtherProduct = Product.discriminator('other', OtherSchema, options);
+const NormalProduct = Product.discriminator('normal', NormalSchema, options);
 
-module.exports = {Product, EyeGlassProduct, MedicineProduct, OtherProduct }
+module.exports = { Product, EyeGlassProduct, MedicineProduct, NormalProduct }

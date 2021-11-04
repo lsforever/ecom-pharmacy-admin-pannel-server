@@ -24,7 +24,9 @@ const ProductList = (props) => {
                 <TextField label="Id" source='id'/>
                 <TextField label="Name" source='name'/>
                 <BooleanField label="Is Published" source="flag" />
-                <TextField label="Category" source="category" />
+                <TextField label="Category" source="category.name" />
+
+                <TextField label="kind" source="kind" />
                 <TextField label="Markup Price" source="price"  />
                 <DateField label="Created At" source="createdAt" />
                 {/* <TextField label="Description" source="description" /> */}

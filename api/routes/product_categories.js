@@ -49,7 +49,7 @@ router.delete(
 
             let ids = filter._id
             for (const s of ids) {
-                if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ids received' })
+                if (!mongoose.Types.ObjectId.isValid(s)) return res.status(400).json({ message: 'Invalid ids received' })
             }
 
 
@@ -198,14 +198,14 @@ router.post(
         }
 
         const name = req.body.name
-        console.log(name)
+ 
 
         try {
 
             item = new ProductCategory({
                 name
             })
-            console.log(item)
+
 
             await item.save()
             res.status(200).json({ _id: item._id })
@@ -263,7 +263,7 @@ router.get('/',
                 filter = {}
             }
 
-            console.log(filter)
+    
 
             let cat_list = await ProductCategory
                 .find(filter)

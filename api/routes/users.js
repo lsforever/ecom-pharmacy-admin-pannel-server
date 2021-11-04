@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
-// const bcrypt = require('bcryptjs')
-// const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 const config = require('config')
 const { check, validationResult } = require('express-validator')
 
@@ -393,12 +393,32 @@ router.get('/',
                     }
 
                     delete filter.details
+
                 }
 
                 if (filter._id) {
                     if (!mongoose.isValidObjectId(filter._id)) {
                         delete filter._id
                     }
+                }
+                
+
+                if (filter.createdAt) {
+                   
+                    let start = new Date(Number(filter.createdAt))
+                    let end = new Date(Number(filter.createdAt))
+                    start.setHours(0, 0, 0, 0)
+                    end.setHours( 23, 59, 59, 59)
+                    console.log(start.toLocaleString())
+                    console.log(end.toLocaleString())
+                   
+                    //date.toLocaleString()
+                    filter.createdAt = {
+                        $gte: start,
+                        $lt: end
+                   
+                    }
+
                 }
             }
 
