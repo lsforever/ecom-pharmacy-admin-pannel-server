@@ -8,7 +8,7 @@ let apiUrl
 
 if (process.env.NODE_ENV === 'production') {
     apiUrl = 'https://niramoy-admin.herokuapp.com/api'
-}else{
+} else {
     apiUrl = 'http://localhost:3000/api'
 }
 
@@ -88,8 +88,11 @@ export default {
                 data: json
             }
 
+          
+
             obj.data.id = obj.data._id
             delete obj.data._id
+
             return obj
 
         }),
@@ -98,7 +101,7 @@ export default {
     //done
     getMany: (resource, params) => {
         const query = {
-            filter: JSON.stringify({ ids: params.ids }),
+            filter: JSON.stringify({ _id: params.ids }),
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
         return fetchJson(url).then(({ json }) => ({ data: json.map(resource => ({ ...resource, id: resource._id })) }));

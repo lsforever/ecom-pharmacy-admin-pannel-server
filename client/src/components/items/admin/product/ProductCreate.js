@@ -19,8 +19,7 @@ import {
 
 } from 'react-admin';
 
-//TODO react form delete uninstall if not needed
-import { useFormState } from 'react-final-form';
+//import { useFormState } from 'react-final-form';
 
 import RichTextInput from 'ra-input-rich-text';
 

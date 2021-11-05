@@ -15,6 +15,7 @@ import UserShow from '../items/admin/user/UserShow'
 import ProductList from '../items/admin/product/ProductList'
 import ProductEdit from '../items/admin/product/ProductEdit'
 import ProductCreate from '../items/admin/product/ProductCreate'
+import ProductShow from '../items/admin/product/ProductShow'
 
 import ProductCategoryList from '../items/admin/product_category/ProductCategoryList'
 import ProductCategoryCreate from '../items/admin/product_category/ProductCategoryCreate'
@@ -46,7 +47,7 @@ const Admin = () => {
             >
 
                 <Resource name="users"  options={{ label: 'Users' }} onClick={UserEdit}  list={UserList} create={UserCreate} edit={UserEdit} show={UserShow} />
-                <Resource name="products" options={{ label: 'Products' }} list={ProductList} create={ProductCreate} edit={ProductEdit} />
+                <Resource name="products" options={{ label: 'Products' }} list={ProductList} create={ProductCreate} edit={ProductEdit} show={ProductShow} />
                 <Resource name="product-categories" options={{ label: 'Product Categories' }} list={ProductCategoryList} create={ProductCategoryCreate} edit={ProductCategoryEdit}  />
                 {/* <Resource name="users" list={ListGuesser} /> */}
                 {/* <Resource
