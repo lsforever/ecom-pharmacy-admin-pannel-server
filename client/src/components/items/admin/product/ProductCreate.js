@@ -7,12 +7,10 @@ import {
     BooleanInput,
     NumberInput,
     SelectInput,
+    SimpleForm,
 
     FormDataConsumer,
     required,
-
-    TabbedForm,
-    FormTab,
 
     ArrayInput,
     SimpleFormIterator,
@@ -91,67 +89,90 @@ const ProductCreate = (props) => {
 
 
 
-            <TabbedForm syncWithLocation={false} >
+            <SimpleForm syncWithLocation={false} >
 
 
-                <FormTab label="basics">
-                    <SelectInput label="Product Type (Kind)" source="kind" optionText="name" optionValue="id" validate={required("Product Kind is required")} choices={kinds} />
-                    <TextInput label="Name" source='name' />
-                    <BooleanInput label="Is Published" source="flag" />
+
+                <SelectInput label="Product Type (Kind)" source="kind" optionText="name" optionValue="id" validate={required("Product Kind is required")} choices={kinds} />
+                <TextInput label="Name" source='name' />
+                <BooleanInput label="Is Published" source="flag" />
 
 
-                    <NumberInput label="Price (optional)" source="price" />
-                    <TextInput label="Brand (optional)" source="brand" />
+                <NumberInput label="Price (optional)" source="price" />
+                <TextInput label="Brand (optional)" source="brand" />
 
 
-                </FormTab>
 
-                <FormTab label="Product Category">
-
-                    <ReferenceInput
-                        validate={required('Category is required')}
-                        source="category"
-                        defaultValue=""
-                        label="Product Category"
-                        reference="product-categories"
-                        sort={{ field: 'name', order: 'ASC' }}
-                    >
-                        <SelectInput optionText="name" optionValue="id" defaultValue="" />
-                    </ReferenceInput >
+                <ReferenceInput
+                    validate={required('Category is required')}
+                    source="category"
+                    defaultValue=""
+                    label="Product Category"
+                    reference="product-categories"
+                    sort={{ field: 'name', order: 'ASC' }}
+                >
+                    <SelectInput optionText="name" optionValue="id" defaultValue="" />
+                </ReferenceInput >
 
 
-                </FormTab>
 
-                <FormTab label="Product Description">
-                    <RichTextInput label="Product description" source="description" />
-                </FormTab>
+
+                <RichTextInput label="Product description" source="description" />
+
 
 
                 <FormDataConsumer>
-                    {({ formData, ...rest }) => {
+                    {({ formData }) => {
                         if (formData.kind === "normal") {
                             return (
-                                <FormTab label="Normal Product" {...rest}>
+                                <>
                                     <TextInput label="Other" source="other" />
-                                </FormTab>
+                                </>
                             )
                         } else if (formData.kind === "eye_glass") {
                             return (
-                                <FormTab label="Eye Glass Product" {...rest}>
+                                <>
                                     <TextInput label="Eye Glass Type" source="eye_glass_type" />
-                                </FormTab>
+                                </>
                             )
 
                         } else if (formData.kind === "medicine") {
                             return (
 
-                                <FormTab label="Medicine Product" {...rest}>
-                                    <TextInput label="Special Name" source="special_name" />
-                                    <TextInput label="Strength" source="strength" />
-                                    <NumberInput label="Strip" source="strip" />
-                                    <NumberInput label="Box" source="box" />
-                                </FormTab>
+                                <>
 
+                                    <TextInput label="Special Name" source="special_name" />
+                                    <br></br>
+                              
+                                    <TextInput label="Strength" source="strength" />
+                                    <br></br>
+
+                                    <NumberInput label="Strip" source="strip" />
+                                    <br></br>
+                                    <NumberInput label="Box" source="box" />
+                                    <br></br>
+
+
+                                    <ArrayInput label="Medicine Type" source="medicine_type">
+                                        <SimpleFormIterator>
+                                            <TextInput label="Type" />
+                                        </SimpleFormIterator>
+                                    </ArrayInput>
+                                    <br></br>
+
+                                    <ArrayInput label="Company Name" source="company_name">
+                                        <SimpleFormIterator>
+                                            <TextInput label="Company" />
+                                        </SimpleFormIterator>
+                                    </ArrayInput>
+                                    <br></br>
+
+                                    <ArrayInput label="Generic Name" source="generic_name" >
+                                        <SimpleFormIterator>
+                                            <TextInput label="Generic" />
+                                        </SimpleFormIterator>
+                                    </ArrayInput>
+                                </>
 
                             )
                         } else {
@@ -164,49 +185,7 @@ const ProductCreate = (props) => {
 
 
 
-                <FormDataConsumer>
-                    {({ formData, ...rest }) =>
-                        formData.kind === "medicine" &&
-                        <FormTab label="Medicine Type" {...rest}>
-                            <ArrayInput label="Medicine Type" source="medicine_type">
-                                <SimpleFormIterator>
-                                    <TextInput label="Type" />
-                                </SimpleFormIterator>
-                            </ArrayInput>
-                        </FormTab>
-                    }
-                </FormDataConsumer>
-
-                <FormDataConsumer>
-                    {({ formData, ...rest }) =>
-                        formData.kind === "medicine" &&
-                        <FormTab label="Company Name" {...rest}>
-                            <ArrayInput label="Company Name" source="company_name">
-                                <SimpleFormIterator>
-                                    <TextInput label="Company" />
-                                </SimpleFormIterator>
-                            </ArrayInput>
-                        </FormTab>
-                    }
-                </FormDataConsumer>
-
-                <FormDataConsumer>
-                    {({ formData, ...rest }) =>
-                        formData.kind === "medicine" &&
-                        <FormTab label="Generic Name" {...rest}>
-                            <ArrayInput label="Generic Name" source="generic_name" >
-                                <SimpleFormIterator>
-                                    <TextInput label="Generic" />
-                                </SimpleFormIterator>
-                            </ArrayInput>
-                        </FormTab>
-                    }
-                </FormDataConsumer>
-
-
-
-
-            </TabbedForm>
+            </SimpleForm>
 
 
         </Create>
@@ -215,309 +194,3 @@ const ProductCreate = (props) => {
 
 export default ProductCreate
 
-
-
-
-
-
-{/* <TabbedForm syncWithLocation={false} >
-
-
-<FormTab label="basics">
-    <SelectInput label="Product Type (Kind)" source="kind" optionText="name" optionValue="id" validate={required("Product Kind is required")} choices={kinds} />
-    <TextInput label="Name" source='name' />
-    <BooleanInput label="Is Published" source="flag" />
-
-
-    <NumberInput label="Price (optional)" source="price" />
-    <TextInput label="Brand (optional)" source="brand" />
-
-
-</FormTab>
-
-<FormTab label="Product Category">
-
-    <ReferenceInput
-        validate={required('Category is required')}
-        source="category"
-        defaultValue=""
-        label="Product Category"
-        reference="product-categories"
-        sort={{ field: 'name', order: 'ASC' }}
-    >
-        <SelectInput optionText="name" optionValue="id" defaultValue="" />
-    </ReferenceInput >
-
-
-</FormTab>
-
-<FormTab label="Product Description">
-    <RichTextInput label="Product description" source="description" />
-</FormTab>
-
-
-<FormDataConsumer>
-    {({ formData, ...props }) =>
-        formData.kind === "normal" &&
-        <FormTab label="Normal Product" {...props}>
-            <TextInput label="Other" source="other" />
-        </FormTab>
-    }
-</FormDataConsumer>
-
-<FormDataConsumer>
-    {({ formData, ...props }) =>
-        formData.kind === "eye_glass" &&
-        <FormTab label="Eye Glass Product" {...props}>
-            <TextInput label="Eye Glass Type" source="eye_glass_type" />
-        </FormTab>
-    }
-</FormDataConsumer>
-
-<FormDataConsumer>
-    {({ formData, ...rest }) =>
-        formData.kind === "medicine" &&
-
-        <FormTab label="Medicine Product" {...rest}>
-            <TextInput label="Special Name" source="special_name" />
-            <TextInput label="Strength" source="strength" />
-            <NumberInput label="Strip" source="strip" />
-            <NumberInput label="Box" source="box" />
-        </FormTab>
-    }
-</FormDataConsumer>
-
-
-
-<FormDataConsumer>
-    {({ formData, ...rest }) =>
-        formData.kind === "medicine" &&
-        <FormTab label="Medicine Type" {...rest}>
-            <ArrayInput label="Medicine Type" source="medicine_type">
-                <SimpleFormIterator>
-                    <TextInput label="Type" />
-                </SimpleFormIterator>
-            </ArrayInput>
-        </FormTab>
-    }
-</FormDataConsumer>
-
-<FormDataConsumer>
-    {({ formData, ...rest }) =>
-        formData.kind === "medicine" &&
-        <FormTab label="Company Name" {...rest}>
-            <ArrayInput label="Company Name" source="company_name">
-                <SimpleFormIterator>
-                    <TextInput label="Company" />
-                </SimpleFormIterator>
-            </ArrayInput>
-        </FormTab>
-    }
-</FormDataConsumer>
-
-<FormDataConsumer>
-    {({ formData, ...rest }) =>
-        formData.kind === "medicine" &&
-        <FormTab label="Generic Name" {...rest}>
-            <ArrayInput label="Generic Name" source="generic_name" >
-                <SimpleFormIterator>
-                    <TextInput label="Generic" />
-                </SimpleFormIterator>
-            </ArrayInput>
-        </FormTab>
-    }
-</FormDataConsumer>
-
-
-
-
-</TabbedForm> */}
-
-
-
-
-
-
-
-
-
-// const SpecialProductInput = props => {
-//     const { values } = useFormState();
-//     //////////////NORMAL
-//     //values.other
-
-//     //////////////EYE_GLASS
-//     //values.eye_glass_type
-
-//     //////////////MEDICINE
-//     //values.special_name
-//     //values.strength
-//     //values.strip
-//     //values.box
-//     //values.medicine_type
-//     //values.company_name
-//     //values.generic_name
-
-//     if (values.kind === 'normal') {
-//         //////////////EYE_GLASS
-//         values.eye_glass_type = undefined
-
-//         //////////////MEDICINE
-//         values.special_name = undefined
-//         values.strength = undefined
-//         values.strip = undefined
-//         values.box = undefined
-//         values.medicine_type = undefined
-//         values.company_name = undefined
-//         values.generic_name = undefined
-
-//         return (
-//             <FormTab label="Normal Product" {...props}>
-//                 <TextInput label="Other" source="other" />
-//             </FormTab>
-//         )
-//     } else if (values.kind === 'medicine') {
-//         //////////////NORMAL
-//         values.other = undefined
-
-//         //////////////EYE_GLASS
-//         values.eye_glass_type = undefined
-
-//         return (
-
-
-
-
-//             <FormTab label="Medicine Product" {...props}>
-//                 <TextInput label="Special Name" source="special_name" />
-//                 <TextInput label="Strength" source="strength" />
-//                 <NumberInput label="Strip" source="strip" />
-//                 <NumberInput label="Box" source="box" />
-
-
-
-//                 {/* <ArrayInput label="Medicine Type" source="medicine_type">
-//                     <SimpleFormIterator>
-//                         <TextInput label="Type" />
-//                     </SimpleFormIterator>
-//                 </ArrayInput>
-
-//                 <ArrayInput label="Company Name" source="company_name">
-//                     <SimpleFormIterator>
-//                         <TextInput label="Company" />
-//                     </SimpleFormIterator>
-//                 </ArrayInput>
-
-//                 <ArrayInput label="Generic Name" source="generic_name" >
-//                     <SimpleFormIterator>
-//                         <TextInput label="Generic" />
-//                     </SimpleFormIterator>
-//                 </ArrayInput> */}
-
-
-
-//             </FormTab>
-
-
-
-//         )
-//     } else if (values.kind === 'eye_glass') {
-
-//         //////////////NORMAL
-//         values.other = undefined
-
-//         //////////////MEDICINE
-//         values.special_name = undefined
-//         values.strength = undefined
-//         values.strip = undefined
-//         values.box = undefined
-//         values.medicine_type = undefined
-//         values.company_name = undefined
-//         values.generic_name = undefined
-//         return (
-//             <FormTab label="Eye Glass Product" {...props}>
-//                 <TextInput label="Eye Glass Type" source="eye_glass_type" />
-//             </FormTab>
-//         )
-//     } else {
-//         return (
-//             null
-
-//         )
-//     }
-
-// };
-
-
-
-{/* <TabbedForm syncWithLocation={false} >
-
-
-<FormTab label="basics">
-    <SelectInput label="Product Type (Kind)" source="kind" optionText="name" optionValue="id" validate={required("Product Kind is required")} choices={[
-        { id: 'normal', name: 'Normal Product' },
-        { id: 'eye_glass', name: 'Eye Glass Product' },
-        { id: 'medicine', name: 'Medicine Product' },
-
-    ]} />
-    <TextInput label="Name" source='name' />
-    <BooleanInput label="Is Published" source="flag" />
-
-
-    <NumberInput label="Price (optional)" source="price" />
-    <TextInput label="Brand (optional)" source="brand" />
-
-
-</FormTab>
-
-<FormTab label="Product Category" syncWithLocation={false}>
-
-    <ReferenceInput
-        validate={required('Category is required')}
-        source="category"
-        defaultValue=""
-        label="Product Category"
-        reference="product-categories"
-        sort={{ field: 'name', order: 'ASC' }}
-    >
-        <SelectInput optionText="name" optionValue="id" defaultValue="" />
-    </ReferenceInput >
-
-
-</FormTab>
-
-<FormTab label="Product Description">
-    <RichTextInput label="Product description" source="description" />
-</FormTab>
-
-<FormDataConsumer>
-    {({ formData, ...rest }) =>
-        formData.kind === "normal" &&
-        <FormTab label="Normal Product" {...rest}>
-            <TextInput source="normal____" validate={required()} addLabel={false} />
-        </FormTab>
-    }
-</FormDataConsumer>
-
-<FormDataConsumer>
-    {({ formData, ...rest }) =>
-        formData.kind === "medicine" &&
-        <FormTab label="Medicine Product" {...rest}>
-            <TextInput source="medicine____" validate={required()} addLabel={false} />
-        </FormTab>
-    }
-</FormDataConsumer>
-
-<FormDataConsumer>
-    {({ formData, ...rest }) =>
-        formData.kind === "eye_glass" &&
-        <FormTab label="Eye Glass Product" {...rest}>
-            <TextInput source="eye_glass____" validate={required()} addLabel={false} />
-        </FormTab>
-    }
-</FormDataConsumer>
-
-
-
-
-</TabbedForm> */}
