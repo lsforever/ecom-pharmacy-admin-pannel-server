@@ -1,13 +1,13 @@
 const express = require('express')
 const router = express.Router()
 
-const { validationResult } = require('express-validator')
-const { product_input_check_create, product_input_check_update } = require('../middlewares/product_input_check')
+const { check, validationResult } = require('express-validator')
+const { product_input_check_create, product_input_check_update } = require('../../middlewares/product_input_check')
 
-const { Product, EyeGlassProduct, MedicineProduct, NormalProduct } = require('../models/Product')
-const rolecheck = require('../middlewares/rolecheck')
-const roles = require('../utils/constants/roles')
-const auth = require('../middlewares/auth')
+const { Product, EyeGlassProduct, MedicineProduct, NormalProduct } = require('../../models/Product')
+const rolecheck = require('../../middlewares/rolecheck')
+const roles = require('../../utils/constants/roles')
+const auth = require('../../middlewares/auth')
 
 const mongoose = require('mongoose')
 
@@ -235,6 +235,7 @@ router.get('/:id',
 router.post(
     '/',
     product_input_check_create,
+   
     auth,
     rolecheck([
         roles.owner,
@@ -250,9 +251,6 @@ router.post(
         if (!res.locals.allowed) {
             return res.status(401).json({ message: 'Access denied' })
         }
-
-
-
 
 
         try {
@@ -324,6 +322,7 @@ router.post(
             res.status(200).json({ _id: data._id })
 
         } catch (error) {
+
             console.error(error.message)
             res.status(500).send('Server Error')
         }

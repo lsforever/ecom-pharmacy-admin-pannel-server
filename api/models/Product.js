@@ -24,15 +24,9 @@ const ProductSchema = mongoose.Schema({
         ref: 'product_category'
     },
     images: [String],
-    brand: {
-        type: String,
-        required: true,
-        default: "n/a"
-    },
+  
     description: {
         type: String,
-        required: true,
-        default: "n/a"
     }
 },
 

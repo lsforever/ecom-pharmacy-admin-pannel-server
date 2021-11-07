@@ -12,7 +12,7 @@ connectDB()
 // Init Middleware
 //app.use(express.json({ extended: false }))
 
-app.use(express.json()) 
+app.use(express.json())
 
 //app.use(express.json());
 app.use(express.urlencoded({
@@ -27,9 +27,10 @@ app.use('/api/test', (req, res) => {
 // Define Routes
 app.use('/api/auth', require('./api/routes/auth'))
 app.use('/api/users', require('./api/routes/users'))
-app.use('/api/products', require('./api/routes/products'))
-app.use('/api/product-categories', require('./api/routes/product_categories'))
+app.use('/api/products', require('./api/routes/products/products'))
+app.use('/api/product-categories', require('./api/routes/products/product_categories'))
 
+app.use('/api/vendors', require('./api/routes/vendors/vendors'))
 
 
 // Serve static items in production

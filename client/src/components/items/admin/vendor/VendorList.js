@@ -9,12 +9,7 @@ import {
     DeleteWithConfirmButton,
     TextInput,
     ShowButton,
-
-    
-    SelectInput,
-
     useTranslate
-
 
 } from 'react-admin'
 
@@ -36,19 +31,10 @@ const postFilters = [
     <TextInput label="Search by Name" source="details.name" alwaysOn />,
     <TextInput label="By Email" source="email" />,
     <TextInput label="By Id" source="id" />,
-    <TextInput label="By Address" source="details.address" />,
- 
-    <SelectInput label="Role" source="roles" alwaysOn choices={[
-        { id: 'owner', name: 'Owner' },
-        { id: 'admin', name: 'Admin' },
-        { id: 'vendor', name: 'Vendor' },
-        { id: 'delivery_person', name: 'Delivery Person' },
-    ]} />,
-    <QuickFilter source="email_verified" label="Email Not Verified" defaultValue={false} />,
-    <QuickFilter source="createdAt" label="Created Today" defaultValue={Date.now()} />,
+    <QuickFilter source="flag" label="Not Accepted" defaultValue={false} />,
 ];
 
-const UserList = (props) => {
+const VendorList = (props) => {
     return (
         <List {...props} filters={postFilters} >
             <Datagrid>
@@ -69,4 +55,4 @@ const UserList = (props) => {
     )
 }
 
-export default UserList
+export default VendorList

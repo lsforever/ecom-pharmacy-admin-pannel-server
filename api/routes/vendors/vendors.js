@@ -3,10 +3,12 @@ const router = express.Router()
 
 const { check, validationResult } = require('express-validator')
 
-const ProductCategory = require('../models/ProductCategory')
-const rolecheck = require('../middlewares/rolecheck')
-const roles = require('../utils/constants/roles')
-const auth = require('../middlewares/auth')
+const Vendor = require('../../models/Vendor')
+const {User} = require('../../models/User')
+
+const rolecheck = require('../../middlewares/rolecheck')
+const roles = require('../../utils/constants/roles')
+const auth = require('../../middlewares/auth')
 
 const mongoose = require('mongoose')
 
@@ -55,7 +57,7 @@ router.delete(
 
 
 
-            await ProductCategory.deleteMany({
+            await Vendor.deleteMany({
 
                 '_id': {
                     $in: ids.map(id => mongoose.Types.ObjectId(id))
@@ -95,7 +97,7 @@ router.delete(
 
             const id = req.params.id
             if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid id received' })
-            let output = await ProductCategory.findByIdAndDelete(mongoose.Types.ObjectId(id))
+            let output = await Vendor.findByIdAndDelete(mongoose.Types.ObjectId(id))
             res.status(200).json(output)
 
 
@@ -113,14 +115,15 @@ router.delete(
 router.put(
     '/:id',
     [
-        check('name', 'Category name should not be empty')
-            .notEmpty(),
+        check('flag', 'Name should not be empty')
+            .isBoolean()
+            .optional(),
 
     ],
     auth,
     rolecheck([
         roles.owner,
-        roles.admin
+        roles.admin,
     ]),
     async (req, res) => {
 
@@ -131,20 +134,50 @@ router.put(
 
 
         try {
-            if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ message: 'Invalid id received' })
+            //if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ message: 'Invalid parameter id received' })
 
-            if (!res.locals.allowed) {
+
+            if (!(res.locals.user.roles[roles.vendor] === req.params.id) && !res.locals.allowed) {
                 return res.status(401).json({ message: 'Access denied' })
             }
 
-            const name = req.body.name
 
-            let output = await ProductCategory.findByIdAndUpdate(req.params.id, { name })
+
+            const {
+                name,
+                flag,
+                user,
+                type,
+                address,
+                contact,
+                location,
+                owner_img,
+                drug_license,
+                trade_license
+
+            } = req.body
+
+            if (user && !mongoose.Types.ObjectId.isValid(user)) return res.status(400).json({ message: 'Invalid user id received' })
+
+
+            let output = await Vendor.findByIdAndUpdate(req.params.id,
+                {
+                    name,
+                    flag,
+                    user,
+                    type,
+                    address,
+                    contact,
+                    location,
+                    owner_img,
+                    drug_license,
+                    trade_license
+                })
             res.status(200).json(output)
 
         } catch (error) {
             console.error(error.message)
-            res.status(500).send('Server Error')
+            res.status(500).send('Something went wrong')
         }
     }
 )
@@ -160,7 +193,7 @@ router.get('/:id',
     auth,
     async (req, res) => {
         try {
-            let output = await ProductCategory.findById(req.params.id)
+            let output = await Vendor.findById(req.params.id)
             res.status(200).json(output)
 
         } catch (error) {
@@ -172,41 +205,49 @@ router.get('/:id',
 
 
 // 01
-// @route       POST api/product-categories
-// @desc        create a category
+// @route       POST api/vendors
+// @desc        create a Vendor
 // @access      Private
 router.post(
     '/',
     [
-        check('name', 'Category name should not be empty')
-            .notEmpty(),
+        check('email', 'Email invalid')
+            .isEmail(),
+        check('name', 'Empty name')
+            .isEmail(),
 
     ],
-    auth,
-    rolecheck([
-        roles.owner,
-        roles.admin
-    ]),
     async (req, res) => {
+
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() })
         }
 
-        if (!res.locals.allowed) {
-            return res.status(401).json({ message: 'Access denied' })
-        }
 
-        const name = req.body.name
- 
+        const { email, name } = req.body
 
         try {
 
-            item = new ProductCategory({
-                name
+            let user_ref = await User.find({ email: email })
+
+            if(!user){
+                return res.status(400).json({ message: "User with that email is not available. Register as a user first" })
+            }
+
+       
+
+            item = new Vendor({
+                email,
+                name,
+                user:mongoose.Types.ObjectId(user_ref._id)
             })
 
 
+            await User.findByIdAndUpdate(user_ref._id,
+                {
+                    [`roles.${roles.vendor}`]:item._id
+                })
             await item.save()
             res.status(200).json({ _id: item._id })
 
@@ -236,13 +277,13 @@ router.get('/',
 
             if (range) {
                 range = JSON.parse(range)
-            }else {
+            } else {
                 range = [0, 0]
             }
             if (sort) {
                 sort = JSON.parse(sort)
-            }else {
-                sort = {"name":"asc"}
+            } else {
+                sort = { "name": "asc" }
             }
             if (filter) {
                 filter = JSON.parse(filter)
@@ -259,21 +300,21 @@ router.get('/',
                     }
                 }
 
-            }else{
+            } else {
                 filter = {}
             }
 
-    
 
-            let cat_list = await ProductCategory
+
+            let cat_list = await Vendor
                 .find(filter)
                 .sort(sort)
                 .skip(range[0])
                 .limit(range[1])
 
-        
+
             const count = await ProductCategory.countDocuments()
-            const header = `product-categories ${range[0] + 1}-${cat_list.length + range[0]}/${count}`
+            const header = `vendors ${range[0] + 1}-${cat_list.length + range[0]}/${count}`
             res.setHeader('Content-Range', header)
             res.status(200).json(cat_list)
 

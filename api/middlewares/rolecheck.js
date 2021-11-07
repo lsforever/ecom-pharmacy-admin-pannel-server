@@ -1,6 +1,8 @@
+const mongoose = require('mongoose')
+
 module.exports = function (allowed) {
     return async (req, res, next) => {
-        const found = allowed.some(r => res.locals.user.roles.includes(r))
+        const found = allowed.some(item => mongoose.isValidObjectId(res.locals.user.roles[item]))
         if (found) {
             res.locals.allowed = true
         } else {

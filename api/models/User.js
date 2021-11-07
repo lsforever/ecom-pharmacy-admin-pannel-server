@@ -19,18 +19,27 @@ const UserDetailsSchema = mongoose.Schema({
 
 
 
+
+
 // Only add this role details here , after admin aproves their roles
 // ref id is the object id for the rechord in corresponding collection for that role
 const RoleDetailsSchema = mongoose.Schema({
-    type: {
-        type: String
+    [roles.owner]: {
+        type: mongoose.Types.ObjectId,
+        ref: roles.owner
     },
-    ref_id: {
-        type: String
+    [roles.admin]: {
+        type: mongoose.Types.ObjectId,
+        ref: roles.admin
     },
-    flag: {
-        type: Boolean
-    }
+    [roles.vendor]: {
+        type: mongoose.Types.ObjectId,
+        ref: roles.vendor
+    },
+    [roles.delivery_person]: {
+        type: mongoose.Types.ObjectId,
+        ref: roles.delivery_person
+    },
 },
     { _id: false }
 )
@@ -49,8 +58,7 @@ const UserSchema = mongoose.Schema({
     // This is the roles user has so that later endpoints will be protected accordingly
     // Only add roles here if the role is accepted by admin (Only the users with elevated permisions should be added. Others not needed)
     roles: {
-        type: [RoleDetailsSchema],
-        default: []
+        type: RoleDetailsSchema,
     },
     email_verified: {
         type: Boolean,

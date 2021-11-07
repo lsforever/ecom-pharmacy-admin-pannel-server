@@ -19,30 +19,30 @@ const roles = require('../utils/constants/roles')
 //     }
 // })
 
-const PriceSchema = mongoose.Schema({
-    amount: {
-        type: Number,
-        required: true,
-        default: 0
-    },
-    currency: {
-        type: String,
-        default: 'BDT'
-    }
-})
+// const PriceSchema = mongoose.Schema({
+//     amount: {
+//         type: Number,
+//         required: true,
+//         default: 0
+//     },
+//     currency: {
+//         type: String,
+//         default: 'BDT'
+//     }
+// })
 
 
-const VendorProductSchema = mongoose.Schema({
-    price: PriceSchema,
-    availability: {
-        type: Boolean,
-        default: false
-    },
-    stock: {
-        type: Number,
-        default: 0
-    }
-})
+// const VendorProductSchema = mongoose.Schema({
+//     price: PriceSchema,
+//     availability: {
+//         type: Boolean,
+//         default: false
+//     },
+//     stock: {
+//         type: Number,
+//         default: 0
+//     }
+// })
 
 
 const VendorSchema = mongoose.Schema({
@@ -54,8 +54,10 @@ const VendorSchema = mongoose.Schema({
     },
 
     // User ref if available
-    user_ref: {
-        type: String
+    user: {
+        type: mongoose.Types.ObjectId,
+        ref: 'user',
+        unique: true
     },
 
     // Name of the shop of vendor
@@ -96,7 +98,7 @@ const VendorSchema = mongoose.Schema({
         type: String,
     },
 
-    products: [VendorProductSchema]
+  
 },
     { timestamps: true }
 )
@@ -106,8 +108,8 @@ VendorSchema.index({ location: "2dsphere" });
 
 const Vendor = mongoose.model(roles.vendor, VendorSchema)
 
-const VendorProduct = mongoose.model('vendor_products', VendorProductSchema)
+// const VendorProduct = mongoose.model('vendor_products', VendorProductSchema)
 
-const Price = mongoose.model('price', PriceSchema)
+// const Price = mongoose.model('price', PriceSchema)
 
-module.exports = { Vendor, VendorProduct, Price }
+module.exports =  Vendor 

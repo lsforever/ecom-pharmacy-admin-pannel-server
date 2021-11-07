@@ -44,10 +44,10 @@ router.delete(
                 return res.status(400).json({ message: '_ids cannot be empty' })
             }
 
-          
+
 
             const caller = res.locals.user
-          
+
             let mapped_ids = ids.map(id => mongoose.Types.ObjectId(id))
 
             let query = {
@@ -68,9 +68,9 @@ router.delete(
                         {
                             'roles.type': { $ne: "owner" }
                         }
-    
+
                     ]
-    
+
                 }
 
             } else if (caller.roles.includes(roles.admin)) {
@@ -88,9 +88,9 @@ router.delete(
                         {
                             'roles.type': { $ne: "admin" }
                         }
-    
+
                     ]
-    
+
                 }
             } else {
                 return res.status(401).json({ message: 'Access denied' })
@@ -116,7 +116,7 @@ router.delete(
                 })
             }
 
-            res.status(200).json({_ids :ids})
+            res.status(200).json({ _ids: ids })
 
 
 
@@ -150,7 +150,7 @@ router.delete(
                     return res.status(401).json({ message: 'Access denied' })
                 } else {
                     let output = await User.findByIdAndDelete(id)
-           
+
                     res.status(200).json(output)
                 }
             } else if (caller.roles.includes(roles.admin)) {
@@ -159,7 +159,7 @@ router.delete(
                     return res.status(401).json({ message: 'Access denied' })
                 } else {
                     let output = await User.findByIdAndDelete(id)
-           
+
                     res.status(200).json(output)
                 }
             } else {
@@ -351,7 +351,7 @@ router.get('/',
             if (sort) sort = JSON.parse(sort)
             if (filter) filter = JSON.parse(filter)
 
-            
+
 
 
             // Supported normal filters
@@ -364,8 +364,11 @@ router.get('/',
             // details.address
             if (filter) {
                 if (filter.roles) {
-                    filter['roles.type'] = filter.roles.type
-                    delete filter.roles 
+                    const item = filter.roles
+                    delete filter.roles
+                    
+                    filter[`roles.${item}`] =  {  $exists: true }
+      
                 }
                 if (filter.email) {
                     filter.email = {
@@ -401,22 +404,22 @@ router.get('/',
                         delete filter._id
                     }
                 }
-                
+
 
                 if (filter.createdAt) {
-                   
+
                     let start = new Date(Number(filter.createdAt))
                     let end = new Date(Number(filter.createdAt))
                     start.setHours(0, 0, 0, 0)
-                    end.setHours( 23, 59, 59, 59)
+                    end.setHours(23, 59, 59, 59)
                     console.log(start.toLocaleString())
                     console.log(end.toLocaleString())
-                   
+
                     //date.toLocaleString()
                     filter.createdAt = {
                         $gte: start,
                         $lt: end
-                   
+
                     }
 
                 }
@@ -436,9 +439,8 @@ router.get('/',
             }
 
 
-
             let users_list = await User
-                .find(filter)
+                .find(filter )
                 .sort(sort)
                 .select('-password')
                 .skip(range[0])

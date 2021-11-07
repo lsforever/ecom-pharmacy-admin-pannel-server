@@ -22,6 +22,19 @@ import ProductCategoryCreate from '../items/admin/product_category/ProductCatego
 import ProductCategoryEdit from '../items/admin/product_category/ProductCategoryEdit'
 
 
+//TODO ona nettam ayin  karanna
+import TreeMenu from '@bb-tech/ra-treemenu';
+
+
+// import {
+//     PeopleAltRoundedIcon,
+//     CategoryRoundedIcon,
+//     SportsBaseballRoundedIcon,
+// } from '@mui/icons-material/PeopleAltRounded';
+import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
+import CategoryRoundedIcon from '@mui/icons-material/PeopleAltRounded';
+import SportsBaseballRoundedIcon from '@mui/icons-material/PeopleAltRounded';
+
 
 const Admin = () => {
     return (
@@ -33,6 +46,8 @@ const Admin = () => {
                 dataProvider={DataProvider}
                 authProvider={AuthProvider}
                 loginPage={CustomLoginPage}
+                // menu={TreeMenu}
+
             // dataProvider={dataProviderFactory(
             //     process.env.REACT_APP_DATA_PROVIDER || ''
             // )}
@@ -46,9 +61,23 @@ const Admin = () => {
             // disableTelemetry
             >
 
-                <Resource name="users"  options={{ label: 'Users' }} onClick={UserEdit}  list={UserList} create={UserCreate} edit={UserEdit} show={UserShow} />
-                <Resource name="products" options={{ label: 'Products' }} list={ProductList} create={ProductCreate} edit={ProductEdit} show={ProductShow} />
-                <Resource name="product-categories" options={{ label: 'Product Categories' }} list={ProductCategoryList} create={ProductCategoryCreate} edit={ProductCategoryEdit}  />
+
+{/* <Resource name="people" options={{ "label": "People", "isMenuParent": true }} />
+                <Resource name="users" icon={PeopleAltRoundedIcon} options={{ label: 'Users' , "menuParent": "people"}} onClick={UserEdit} list={UserList} create={UserCreate} edit={UserEdit} show={UserShow} />
+                
+
+                <Resource name="products_main" options={{ "label": "Products", "isMenuParent": true }} />
+                <Resource name="products" options={{ label: 'Products',"menuParent": "products_main" }} list={ProductList} create={ProductCreate} edit={ProductEdit} show={ProductShow} />
+                <Resource name="product-categories" options={{ label: 'Product Categories' ,"menuParent": "products_main"}} list={ProductCategoryList} create={ProductCategoryCreate} edit={ProductCategoryEdit} />
+                 */}
+
+     
+                <Resource name="users" icon={PeopleAltRoundedIcon} options={{ label: 'Users' }} onClick={UserEdit} list={UserList} create={UserCreate} edit={UserEdit} show={UserShow} />
+                
+                
+                <Resource name="products" icon={SportsBaseballRoundedIcon} options={{ label: 'Products' }} list={ProductList} create={ProductCreate} edit={ProductEdit} show={ProductShow} />
+                <Resource name="product-categories" icon={CategoryRoundedIcon} options={{ label: 'Product Categories'}} list={ProductCategoryList} create={ProductCategoryCreate} edit={ProductCategoryEdit} />
+                
                 {/* <Resource name="users" list={ListGuesser} /> */}
                 {/* <Resource
                     name="products"
