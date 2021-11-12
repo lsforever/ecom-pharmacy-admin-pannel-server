@@ -3,7 +3,7 @@ const router = express.Router()
 
 const { validationResult } = require('express-validator')
 
-const { NormalProduct } = require('../models/Product')
+const { NormalProduct } = require('../../models/products/Product')
 const rolecheck = require('../../middlewares/rolecheck')
 const roles = require('../../utils/constants/roles')
 const auth = require('../../middlewares/auth')

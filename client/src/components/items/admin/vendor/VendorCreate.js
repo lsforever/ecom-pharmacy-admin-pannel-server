@@ -12,7 +12,7 @@ const VendorCreate = (props) => {
             <SimpleForm>
                   
                 <TextInput label="Email" source="email" />
-                <TextInput label="name" source="name"/>
+                <TextInput label="Name" source="name"/>
                 
             </SimpleForm>
         </Create>

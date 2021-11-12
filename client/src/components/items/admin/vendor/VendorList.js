@@ -38,13 +38,19 @@ const VendorList = (props) => {
     return (
         <List {...props} filters={postFilters} >
             <Datagrid>
+               
+
                 <TextField label="Id" source='id' />
-                <TextField label="Email" source='email' />
-                <BooleanField label="Email Verified" source="email_verified" />
+                <TextField label="email" source='user.email' />
+                <TextField label="Name" source='name' />
+                <BooleanField label="Is Accepted" source='flag' />
+                <TextField label="Type" source='type' />
+                <TextField label="Address" source='address' />
                 <DateField label="Created Date" source="createdAt" />
-                <TextField label="Name" source="details.name" />
-                <TextField label="Address" source="details.address" />
-                <DateField label="Birthday" source="details.birthday" />
+            
+
+
+            
 
                 <ShowButton />
                 <EditButton />

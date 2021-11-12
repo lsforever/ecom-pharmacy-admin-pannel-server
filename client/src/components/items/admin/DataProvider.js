@@ -146,13 +146,15 @@ export default {
     },
 
     //done
-    create: (resource, params) =>
-        fetchJson(`${apiUrl}/${resource}`, {
+    create: (resource, params) => {
+        //console.log(params.data)
+        return fetchJson(`${apiUrl}/${resource}`, {
             method: 'POST',
             body: JSON.stringify(params.data),
         }).then(({ json }) => ({
             data: { ...params.data, id: json._id },
-        })),
+        }))
+    },
 
     //done
     delete: (resource, params) =>

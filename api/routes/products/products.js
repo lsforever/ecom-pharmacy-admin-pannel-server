@@ -4,7 +4,7 @@ const router = express.Router()
 const { check, validationResult } = require('express-validator')
 const { product_input_check_create, product_input_check_update } = require('../../middlewares/product_input_check')
 
-const { Product, EyeGlassProduct, MedicineProduct, NormalProduct } = require('../../models/Product')
+const { Product, EyeGlassProduct, MedicineProduct, NormalProduct } = require('../../models/products/Product')
 const rolecheck = require('../../middlewares/rolecheck')
 const roles = require('../../utils/constants/roles')
 const auth = require('../../middlewares/auth')
@@ -235,7 +235,7 @@ router.get('/:id',
 router.post(
     '/',
     product_input_check_create,
-   
+
     auth,
     rolecheck([
         roles.owner,

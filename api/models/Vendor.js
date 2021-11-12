@@ -48,7 +48,7 @@ const roles = require('../utils/constants/roles')
 const VendorSchema = mongoose.Schema({
     // Flag to check if the vendor is accepted by admins
     flag: {
-        type: String,
+        type: Boolean,
         required: true,
         default: false
     },
@@ -69,13 +69,11 @@ const VendorSchema = mongoose.Schema({
     // Type of the shop
     type: {
         type: String,
-        required: true,
     },
 
     // Address
     address: {
         type: String,
-        required: true,
     },
 
     // List of contact numbers

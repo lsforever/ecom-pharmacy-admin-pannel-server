@@ -12,8 +12,10 @@ const UserDetailsSchema = mongoose.Schema({
     birthday: {
         type: Date
     },
-},
-    { _id: false }
+}
+
+    , { _id: false }
+
 )
 
 
@@ -40,8 +42,8 @@ const RoleDetailsSchema = mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: roles.delivery_person
     },
-},
-    { _id: false }
+}
+    , { _id: false }
 )
 
 const UserSchema = mongoose.Schema({
@@ -50,7 +52,7 @@ const UserSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-  
+
     password: {
         type: String,
         required: true

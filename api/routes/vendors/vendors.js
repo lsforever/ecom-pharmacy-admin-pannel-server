@@ -4,7 +4,7 @@ const router = express.Router()
 const { check, validationResult } = require('express-validator')
 
 const Vendor = require('../../models/Vendor')
-const {User} = require('../../models/User')
+const { User } = require('../../models/User')
 
 const rolecheck = require('../../middlewares/rolecheck')
 const roles = require('../../utils/constants/roles')
@@ -160,6 +160,10 @@ router.put(
             if (user && !mongoose.Types.ObjectId.isValid(user)) return res.status(400).json({ message: 'Invalid user id received' })
 
 
+            if(!res.locals.allowed){
+                flag = undefined
+            }
+            
             let output = await Vendor.findByIdAndUpdate(req.params.id,
                 {
                     name,
@@ -214,7 +218,7 @@ router.post(
         check('email', 'Email invalid')
             .isEmail(),
         check('name', 'Empty name')
-            .isEmail(),
+            .notEmpty(),
 
     ],
     async (req, res) => {
@@ -229,24 +233,24 @@ router.post(
 
         try {
 
-            let user_ref = await User.find({ email: email })
+            let user_ref = await User.findOne({ email: email })
 
-            if(!user){
+            if (!user_ref) {
                 return res.status(400).json({ message: "User with that email is not available. Register as a user first" })
             }
 
-       
+
 
             item = new Vendor({
                 email,
                 name,
-                user:mongoose.Types.ObjectId(user_ref._id)
+                user: user_ref._id
             })
 
 
             await User.findByIdAndUpdate(user_ref._id,
                 {
-                    [`roles.${roles.vendor}`]:item._id
+                    [`roles.${roles.vendor}`]: item._id
                 })
             await item.save()
             res.status(200).json({ _id: item._id })
@@ -306,17 +310,18 @@ router.get('/',
 
 
 
-            let cat_list = await Vendor
+            let ven_list = await Vendor
                 .find(filter)
                 .sort(sort)
                 .skip(range[0])
                 .limit(range[1])
+                .populate('user', 'email email_verified details')
 
 
-            const count = await ProductCategory.countDocuments()
-            const header = `vendors ${range[0] + 1}-${cat_list.length + range[0]}/${count}`
+            const count = await Vendor.countDocuments()
+            const header = `vendors ${range[0] + 1}-${ven_list.length + range[0]}/${count}`
             res.setHeader('Content-Range', header)
-            res.status(200).json(cat_list)
+            res.status(200).json(ven_list)
 
         } catch (error) {
             console.error(error.message)
@@ -324,12 +329,6 @@ router.get('/',
         }
     }
 )
-
-
-
-
-
-
 
 
 

@@ -22,19 +22,22 @@ import ProductCategoryCreate from '../items/admin/product_category/ProductCatego
 import ProductCategoryEdit from '../items/admin/product_category/ProductCategoryEdit'
 
 
-//TODO ona nettam ayin  karanna
+import MedicineCreate from '../items/admin/product/medicine_product/MedicineCreate'
+
+
+//TODO delete uninstall if not needed
 import TreeMenu from '@bb-tech/ra-treemenu';
 
 
-// import {
-//     PeopleAltRoundedIcon,
-//     CategoryRoundedIcon,
-//     SportsBaseballRoundedIcon,
-// } from '@mui/icons-material/PeopleAltRounded';
-import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
-import CategoryRoundedIcon from '@mui/icons-material/PeopleAltRounded';
-import SportsBaseballRoundedIcon from '@mui/icons-material/PeopleAltRounded';
-
+import {
+    PeopleAltRoundedIcon,
+    CategoryRoundedIcon,
+    SportsBaseballRoundedIcon,
+} from '@mui/icons-material/PeopleAltRounded';
+import VendorCreate from '../items/admin/vendor/VendorCreate'
+import VendorEdit from '../items/admin/vendor/VendorEdit'
+import VendorList from '../items/admin/vendor/VendorList'
+import VendorShow from '../items/admin/vendor/VendorShow'
 
 const Admin = () => {
     return (
@@ -72,12 +75,15 @@ const Admin = () => {
                  */}
 
      
-                <Resource name="users" icon={PeopleAltRoundedIcon} options={{ label: 'Users' }} onClick={UserEdit} list={UserList} create={UserCreate} edit={UserEdit} show={UserShow} />
+                <Resource name="users" icon={CategoryRoundedIcon} options={{ label: 'Users' }} onClick={UserEdit} list={UserList} create={UserCreate} edit={UserEdit} show={UserShow} />
                 
                 
                 <Resource name="products" icon={SportsBaseballRoundedIcon} options={{ label: 'Products' }} list={ProductList} create={ProductCreate} edit={ProductEdit} show={ProductShow} />
-                <Resource name="product-categories" icon={CategoryRoundedIcon} options={{ label: 'Product Categories'}} list={ProductCategoryList} create={ProductCategoryCreate} edit={ProductCategoryEdit} />
-                
+
+                <Resource name="medicine-products" icon={SportsBaseballRoundedIcon} options={{ label: 'Medicine Products' }} list={ProductList} create={MedicineCreate} edit={ProductEdit} show={ProductShow} />
+                <Resource name="product-categories" icon={PeopleAltRoundedIcon} options={{ label: 'Product Categories'}} list={ProductCategoryList} create={ProductCategoryCreate} edit={ProductCategoryEdit} />
+                <Resource name="vendors" icon={SportsBaseballRoundedIcon} options={{ label: 'Vendors' }} list={VendorList} create={VendorCreate} edit={VendorEdit} show={VendorShow} />
+
                 {/* <Resource name="users" list={ListGuesser} /> */}
                 {/* <Resource
                     name="products"

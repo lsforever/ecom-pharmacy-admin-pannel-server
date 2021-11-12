@@ -29,8 +29,9 @@ app.use('/api/auth', require('./api/routes/auth'))
 app.use('/api/users', require('./api/routes/users'))
 app.use('/api/products', require('./api/routes/products/products'))
 app.use('/api/product-categories', require('./api/routes/products/product_categories'))
+app.use('/api/medicine-products', require('./api/routes/products/medicine_product'))
 
-app.use('/api/vendors', require('./api/routes/vendors/vendors'))
+app.use('/api/vendors', require('./api/routes/vendors/vendors')) 
 
 
 // Serve static items in production
