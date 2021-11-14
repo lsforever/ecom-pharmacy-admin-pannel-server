@@ -4,7 +4,6 @@ import {
     SimpleForm,
     TextInput,
     TopToolbar,
-    ShowButton,
     ListButton
 } from 'react-admin';
 

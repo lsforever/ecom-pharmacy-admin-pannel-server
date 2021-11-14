@@ -5,7 +5,6 @@ const options = { discriminatorKey: 'kind' }
 const ProductSchema = mongoose.Schema({
     name: {
         type: String,
-        required: true
     },
 
     // This checks the product is accepted by admins
@@ -23,7 +22,7 @@ const ProductSchema = mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'product_category'
     },
-    images: [String],
+    //images: [String],
 
     description: {
         type: String,
@@ -52,11 +51,25 @@ const NormalSchema = mongoose.Schema({
 
 const MedicineStrengthSchema = mongoose.Schema({
     strength_name: { type: String },
-    picture: { type: String },
+    image: { type: String },
     pack_size: { type: String },
     strip: { type: Number },
     box: { type: Number },
 })
+
+const config = require('config')
+const GCS_BUCKET_NAME = config.get('GCS_BUCKET_NAME')
+const STORAGE_BASE_URL = config.get('STORAGE_BASE_URL')
+
+MedicineStrengthSchema.virtual('image_url').get(function () {
+    if(!this.image){
+        return undefined
+    }
+    return `${STORAGE_BASE_URL}${GCS_BUCKET_NAME}/${this.image}`
+})
+
+MedicineStrengthSchema.set('toObject', { virtuals: true })
+MedicineStrengthSchema.set('toJSON', { virtuals: true })
 
 const MedicineTypeSchema = mongoose.Schema({
     type_name: { type: String },
@@ -69,9 +82,8 @@ const MedicineCompanyProductSchema = mongoose.Schema({
     //     ref: 'company',
     //     unique: true
     // },
-    company_name: { 
+    company_name: {
         type: String,
-        unique: true
     },
     medicine_types: [MedicineTypeSchema],
 })
@@ -79,14 +91,44 @@ const MedicineCompanyProductSchema = mongoose.Schema({
 const MedicineSchema = mongoose.Schema({
     medicine_name: {
         type: String,
-        unique: true
+        unique: true,
     },
     genric_name: {
         type: String,
-        unique: true
     },
     variations: [MedicineCompanyProductSchema],
-    // TODO local foreign and other 6 local field descriptions
+  
+    // provide (local or foreign) to field 'from'
+    from: {
+        type: String,
+    },
+
+
+    // 1. Ingredients
+    // 2. Indication
+    // 3. Usage
+    // 4. Side effects
+    // 5. Pregnancy and lactation
+    // 6. Precautions
+
+    ingredients: {
+        type: String,
+    },
+    indication: {
+        type: String,
+    },
+    usage: {
+        type: String,
+    },
+    side_effects: {
+        type: String,
+    },
+    preg_lac: {
+        type: String,
+    },
+    precautions: {
+        type: String,
+    },
 })
 
 //////////////////////////////////////////
@@ -111,16 +153,17 @@ const Product = mongoose.model('product', ProductSchema)
 const EyeGlassProduct = Product.discriminator('eye_glass', EyeGlassSchema, options)
 //
 const MedicineProduct = Product.discriminator('medicine', MedicineSchema, options)
-const MedicineCompanyProduct = mongoose.model('med_comp_product', MedicineCompanyProductSchema);
-const MedicineType = mongoose.model('med_type', MedicineTypeSchema);
-const MedicineStrength = mongoose.model('med_strength', MedicineStrengthSchema);
+//const MedicineCompanyProduct = mongoose.model('med_comp_product', MedicineCompanyProductSchema);
+//const MedicineType = mongoose.model('med_type', MedicineTypeSchema);
+//const MedicineStrength = mongoose.model('med_strength', MedicineStrengthSchema);
 //
 const NormalProduct = Product.discriminator('normal', NormalSchema, options)
 
 module.exports = {
     //Company,
     Product,
-    EyeGlassProduct, 
-    MedicineProduct, MedicineCompanyProduct,MedicineType,MedicineStrength,
+    EyeGlassProduct,
+    MedicineProduct,
+    // MedicineCompanyProduct, MedicineType, MedicineStrength,
     NormalProduct,
 }

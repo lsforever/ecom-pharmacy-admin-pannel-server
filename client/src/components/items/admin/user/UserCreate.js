@@ -1,17 +1,8 @@
 import React from 'react'
 import {
     Create,
-    Edit,
     SimpleForm,
     TextInput,
-    DateInput,
-    LongTextInput,
-    ReferenceManyField,
-    BooleanInput,
-    Datagrid,
-    TextField,
-    DateField,
-    EditButton
 } from 'react-admin';
 
 

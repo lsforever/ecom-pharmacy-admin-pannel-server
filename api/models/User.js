@@ -73,7 +73,11 @@ const UserSchema = mongoose.Schema({
 
 const User = mongoose.model('user', UserSchema)
 
-const RoleDetails = mongoose.model('role', RoleDetailsSchema)
-const UserDetails = mongoose.model('user_details', UserDetailsSchema)
+//const RoleDetails = mongoose.model('role', RoleDetailsSchema)
+//const UserDetails = mongoose.model('user_details', UserDetailsSchema)
 
-module.exports = { User, RoleDetails, UserDetails }
+module.exports = {
+    User,
+    //RoleDetails,
+    //UserDetails
+}

@@ -3,13 +3,13 @@ const roles = require('../utils/constants/roles')
 
 
 
-const DeliverySchema = mongoose.Schema({
-    order_ref: {
-        type: String
-    }
-},
-    { timestamps: true }
-)
+// const DeliverySchema = mongoose.Schema({
+//     order_ref: {
+//         type: String
+//     }
+// },
+//     { timestamps: true }
+// )
 
 
 const DeliverPersonSchema = mongoose.Schema({
@@ -63,6 +63,9 @@ const DeliverPersonSchema = mongoose.Schema({
 
 const DeliverPerson = mongoose.model(roles.delivery_person, DeliverPersonSchema)
 
-const Delivery = mongoose.model('delivery', DeliverySchema)
+//const Delivery = mongoose.model('delivery', DeliverySchema)
 
-module.exports = { DeliverPerson, Delivery }
+module.exports = { 
+    DeliverPerson
+    //, Delivery 
+}

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Admin as ReactAdmin, Resource, ListGuesser, ShowGuesser } from 'react-admin'
+import { Admin as ReactAdmin, Resource, } from 'react-admin'
 import restProvider from 'ra-data-simple-rest'
 
 import AuthProvider from '../items/admin/AuthProvider'
@@ -23,10 +23,13 @@ import ProductCategoryEdit from '../items/admin/product_category/ProductCategory
 
 
 import MedicineCreate from '../items/admin/product/medicine_product/MedicineCreate'
+import MedicineShow from '../items/admin/product/medicine_product/MedicineShow'
+import MedicineList from '../items/admin/product/medicine_product/MedicineList'
+import MedicineEdit from '../items/admin/product/medicine_product/MedicineEdit'
 
 
 //TODO delete uninstall if not needed
-import TreeMenu from '@bb-tech/ra-treemenu';
+//import TreeMenu from '@bb-tech/ra-treemenu';
 
 
 import {
@@ -74,15 +77,23 @@ const Admin = () => {
                 <Resource name="product-categories" options={{ label: 'Product Categories' ,"menuParent": "products_main"}} list={ProductCategoryList} create={ProductCategoryCreate} edit={ProductCategoryEdit} />
                  */}
 
+
+
+
      
                 <Resource name="users" icon={CategoryRoundedIcon} options={{ label: 'Users' }} onClick={UserEdit} list={UserList} create={UserCreate} edit={UserEdit} show={UserShow} />
                 
                 
-                <Resource name="products" icon={SportsBaseballRoundedIcon} options={{ label: 'Products' }} list={ProductList} create={ProductCreate} edit={ProductEdit} show={ProductShow} />
+                {/* <Resource name="products" icon={SportsBaseballRoundedIcon} options={{ label: 'Products' }} list={ProductList} create={ProductCreate} edit={ProductEdit} show={ProductShow} /> */}
 
-                <Resource name="medicine-products" icon={SportsBaseballRoundedIcon} options={{ label: 'Medicine Products' }} list={ProductList} create={MedicineCreate} edit={ProductEdit} show={ProductShow} />
-                <Resource name="product-categories" icon={PeopleAltRoundedIcon} options={{ label: 'Product Categories'}} list={ProductCategoryList} create={ProductCategoryCreate} edit={ProductCategoryEdit} />
-                <Resource name="vendors" icon={SportsBaseballRoundedIcon} options={{ label: 'Vendors' }} list={VendorList} create={VendorCreate} edit={VendorEdit} show={VendorShow} />
+                <Resource name="medicine-products" icon={SportsBaseballRoundedIcon} options={{ label: 'Medicine Products' }} list={MedicineList} create={MedicineCreate} edit={MedicineEdit} show={MedicineShow} />
+                {/* <Resource name="product-categories" icon={PeopleAltRoundedIcon} options={{ label: 'Product Categories'}} list={ProductCategoryList} create={ProductCategoryCreate} edit={ProductCategoryEdit} />
+                <Resource name="vendors" icon={SportsBaseballRoundedIcon} options={{ label: 'Vendors' }} list={VendorList} create={VendorCreate} edit={VendorEdit} show={VendorShow} /> */}
+
+
+
+
+
 
                 {/* <Resource name="users" list={ListGuesser} /> */}
                 {/* <Resource

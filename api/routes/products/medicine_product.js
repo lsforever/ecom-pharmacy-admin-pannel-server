@@ -7,8 +7,13 @@ const { MedicineProduct } = require('../../models/products/Product')
 const rolecheck = require('../../middlewares/rolecheck')
 const roles = require('../../utils/constants/roles')
 const auth = require('../../middlewares/auth')
+const { processFileArray } = require('../../middlewares/process_file')
 
 const mongoose = require('mongoose')
+
+
+const { uploadImage, deleteFileWithFileName } = require('../../utils/other/helpers')
+
 
 
 // 02 getList	                        GET     http://my.api.url/posts?sort=["title","ASC"]&range=[0, 24]&filter={"title":"bar"}
@@ -53,7 +58,13 @@ router.delete(
             }
 
 
+            let medicines = await MedicineProduct.find({
 
+                '_id': {
+                    $in: ids.map(id => mongoose.Types.ObjectId(id))
+                }
+
+            })
 
             await MedicineProduct.deleteMany({
 
@@ -62,6 +73,38 @@ router.delete(
                 }
 
             })
+
+
+
+
+            try {
+                let files_links = []
+                medicines.forEach(medicine => {
+                    if (medicine.variations) {
+                        medicine.variations.forEach(variation => {
+                            if (variation.medicine_types) {
+                                variation.medicine_types.forEach(type => {
+                                    if (type.strengths) {
+                                        type.strengths.forEach(strength => {
+                                            if (strength.image) {
+                                                files_links.push(strength.image)
+                                            }
+                                        })
+
+                                    }
+                                }
+                                )
+                            }
+                        }
+                        )
+                    }
+
+                })
+
+                files_links.forEach(async item => await deleteFileWithFileName(item))
+            } catch (e) {
+                console.error(error.message)
+            }
 
             res.status(200).json({ _ids: ids })
 
@@ -94,9 +137,43 @@ router.delete(
 
             const id = req.params.id
             if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid id received' })
-            let output = await MedicineProduct.findByIdAndDelete(mongoose.Types.ObjectId(id))
-            res.status(200).json(output)
 
+
+
+            let medicine = await MedicineProduct.findById(req.params.id)
+            if (!medicine) return res.status(400).json({ message: 'No such medicine product available to delete' })
+            let files_links = []
+            if (medicine.variations) {
+                medicine.variations.forEach(variation => {
+                    if (variation.medicine_types) {
+                        variation.medicine_types.forEach(type => {
+                            if (type.strengths) {
+                                type.strengths.forEach(strength => {
+                                    if (strength.image) {
+                                        files_links.push(strength.image)
+                                    }
+                                })
+
+                            }
+                        }
+                        )
+                    }
+                }
+                )
+            }
+
+
+            let output = await medicine.delete()
+
+
+            try {
+                files_links.forEach(async item => await deleteFileWithFileName(item))
+            } catch (e) {
+
+                console.error(e.message)
+            }
+
+            res.status(200).json(output)
 
         } catch (error) {
             console.error(error.message)
@@ -116,86 +193,91 @@ router.put(
         roles.owner,
         roles.admin
     ]),
+    processFileArray('files'),
     async (req, res) => {
 
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() })
-        }
+        // const errors = validationResult(req)
+        // if (!errors.isEmpty()) {
+        //     return res.status(400).json({ errors: errors.array() })
+        // }
 
 
         try {
-            // if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ message: 'Invalid id received' })
+            if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ message: 'Invalid id received' })
 
-            // if (!res.locals.allowed) {
-            //     return res.status(401).json({ message: 'Access denied' })
-            // }
+            if (!res.locals.allowed) {
+                return res.status(401).json({ message: 'Access denied' })
+            }
 
-            // const {
-            //     //kind,
-            //     name,
-            //     flag,
-            //     price,
-            //     category,
-            //     images,
-            //     brand,
-            //     description,
-            //     other,
-            //     eye_glass_type,
-            //     special_name,
-            //     strength,
-            //     medicine_type,
-            //     strip,
-            //     box,
-            //     company_name,
-            //     generic_name,
-            // } = req.body
+            let medicine = await MedicineProduct.findById(req.params.id)
+            if (!medicine) return res.status(400).json({ message: 'No such medicine product available to update' })
+            let old_files_links = []
+            if (medicine.variations) {
+                medicine.variations.forEach(variation => {
+                    if (variation.medicine_types) {
+                        variation.medicine_types.forEach(type => {
+                            if (type.strengths) {
+                                type.strengths.forEach(strength => {
+                                    if (strength.image) {
+                                        old_files_links.push(strength.image)
+                                    }
+                                })
 
-            // let update = {}
-
-
-
-            // if (name) update.name = name
-            // if (flag) update.flag = flag
-            // if (price) update.price = price
-            // if (category) {
-            //     if (!mongoose.isValidObjectId(category)) {
-            //         return res.status(400).json({ message: 'Invalid ID for category' })
-            //     }
-            //     update.category = mongoose.Types.ObjectId(category)
-            // }
-            // if (images) update.images = images
-            // if (brand) update.brand = brand
-            // if (description) update.description = description
-
-            // let doc = await Product.findById(req.params.id)
-
-            // let output
-
-            // if (doc.kind === NormalProduct.modelName) {
-            //     if (other) update.other = other
-
-            //     output = await NormalProduct.findByIdAndUpdate(req.params.id, update)
-            // } else if (doc.kind === EyeGlassProduct.modelName) {
-            //     if (eye_glass_type) update.eye_glass_type = eye_glass_type
-
-            //     output = await EyeGlassProduct.findByIdAndUpdate(req.params.id, update)
-            // } else if (doc.kind === MedicineProduct.modelName) {
-            //     if (special_name) update.special_name = special_name
-            //     if (strength) update.strength = strength
-            //     if (medicine_type) update.medicine_type = medicine_type
-            //     if (strip) update.strip = strip
-            //     if (box) update.box = box
-            //     if (company_name) update.company_name = company_name
-            //     if (generic_name) update.generic_name = generic_name
-
-            //     output = await MedicineProduct.findByIdAndUpdate(req.params.id, update)
-            // } else {
-            //     return res.status(400).json({ message: 'Invalid product kind' })
-            // }
+                            }
+                        }
+                        )
+                    }
+                }
+                )
+            }
 
 
-            // res.status(200).json(output)
+
+
+
+            medicine.overwrite(JSON.parse(req.body.data))
+
+            let new_files_links = []
+            if (medicine.variations) {
+                await Promise.all(medicine.variations.map(async variation => {
+                    if (variation.medicine_types) {
+                        await Promise.all(variation.medicine_types.map(async type => {
+                            if (type.strengths) {
+                                await Promise.all(type.strengths.map(async strength => {
+                                    // Checking if the image is updated (Checking if the string is a index  number of file array)
+                                    if (strength.image && !isNaN(strength.image) && Number.isInteger(parseFloat(strength.image))) {
+                                        const url = await uploadImage(req.files[parseInt(strength.image)], MedicineProduct.modelName, strength._id + ''+Date.now())
+                                        const end_url = url.split("/").slice(-2).join("/")
+                                        strength.image = end_url
+                                        
+                                    }
+                                    new_files_links.push(strength.image)
+                                    return strength
+                                })
+                                )
+                            }
+                        })
+                        )
+                    }
+                })
+                )
+            }
+
+
+
+
+
+            try {
+
+                let files_to_delete = old_files_links.filter(item => !new_files_links.includes(item))
+                files_to_delete.forEach(async item => await deleteFileWithFileName(item))
+            } catch (e) {
+                console.error(error.message)
+            }
+
+            await medicine.save()
+            res.status(200).json(medicine)
+
 
         } catch (error) {
             console.error(error.message)
@@ -215,10 +297,8 @@ router.get('/:id',
     auth,
     async (req, res) => {
         try {
-            //let output = await MedicineProduct.findById(req.params.id)
-            //res.status(200).json(output)
-            console.log("kkkk")
-            res.status(200).json({})
+            let output = await MedicineProduct.findById(req.params.id)
+            res.status(200).json(output)
 
         } catch (error) {
             console.error(error.message)
@@ -234,18 +314,19 @@ router.get('/:id',
 // @access      Private
 router.post(
     '/',
-
     auth,
     rolecheck([
         roles.owner,
         roles.admin
     ]),
+    processFileArray('files'),
     async (req, res) => {
 
         // const errors = validationResult(req)
         // if (!errors.isEmpty()) {
         //     return res.status(400).json({ errors: errors.array() })
         // }
+
 
         if (!res.locals.allowed) {
             return res.status(401).json({ message: 'Access denied' })
@@ -254,78 +335,41 @@ router.post(
 
         try {
 
-            console.log(req.body)
+            const medicine = new MedicineProduct(JSON.parse(req.body.data))
 
-            //return res.status(200).json(req.body)
-
-            // const {
-            //     kind,
-            //     name,
-            //     flag,
-            //     price,
-            //     category,
-            //     images,
-            //     brand,
-            //     description,
-            //     other,
-            //     eye_glass_type,
-            //     special_name,
-            //     strength,
-            //     medicine_type,
-            //     strip,
-            //     box,
-            //     company_name,
-            //     generic_name,
-            // } = req.body
-
-
-
-            // let base = {}
-
-            // if (name) base.name = name
-            // if (flag) base.flag = flag
-            // if (price) base.price = price
-            // if (category) {
-            //     if (!mongoose.isValidObjectId(category)) {
-            //         return res.status(400).json({ message: 'Invalid ID for category' })
-            //     }
-            //     base.category = mongoose.Types.ObjectId(category)
-            // }
-            // if (images) base.images = images
-            // if (brand) base.brand = brand
-            // if (description) base.description = description
+            if (medicine.variations) {
+                await Promise.all(medicine.variations.map(async variation => {
+                    if (variation.medicine_types) {
+                        await Promise.all(variation.medicine_types.map(async type => {
+                            if (type.strengths) {
+                                await Promise.all(type.strengths.map(async strength => {
+                                    if (strength.image) {
+                                        const url = await uploadImage(req.files[parseInt(strength.image)], MedicineProduct.modelName, strength._id + '')
+                                        const end_url = url.split("/").slice(-2).join("/")
+                                        strength.image = end_url
+                                    }
+                                    return strength
+                                })
+                                )
+                            }
+                        })
+                        )
+                    }
+                })
+                )
+            }
 
 
-            // let data;
-
-            // if (kind === NormalProduct.modelName) {
-            //     if (other) base.other = other
-
-            //     data = new NormalProduct(base)
-            // } else if (kind === EyeGlassProduct.modelName) {
-            //     if (eye_glass_type) base.eye_glass_type = eye_glass_type
-
-            //     data = new EyeGlassProduct(base)
-            // } else if (kind === MedicineProduct.modelName) {
-            //     if (special_name) base.special_name = special_name
-            //     if (strength) base.strength = strength
-            //     if (medicine_type) base.medicine_type = medicine_type
-            //     if (strip) base.strip = strip
-            //     if (box) base.box = box
-            //     if (company_name) base.company_name = company_name
-            //     if (generic_name) base.generic_name = generic_name
-
-            //     data = new MedicineProduct(base)
-            // } else {
-            //     return res.status(400).json({ message: 'Invalid product kind' })
-            // }
-
-
-            // await data.save()
-            // res.status(200).json({ _id: data._id })
+            await medicine.save()
+            res.status(200).json({ _id: medicine._id })
 
         } catch (error) {
 
+            if(error.code === 11000){
+                //Duplicate data
+                return res.status(400).json({message:'Medicine with that name already exists'})
+            }
+         
             console.error(error.message)
             res.status(500).send('Server Error')
         }
@@ -346,171 +390,76 @@ router.get('/',
     async (req, res) => {
         try {
 
-            return res.status(200).json({})
+            let { sort, range, filter } = req.query
 
-            // let { sort, range, filter } = req.query
+            if (range) {
+                range = JSON.parse(range)
+            } else {
+                range = [0, 0]
+            }
+            if (sort) {
+                sort = JSON.parse(sort)
+            } else {
+                sort = { "medicine_name": "asc" }
+            }
 
-            // if (range) {
-            //     range = JSON.parse(range)
-            // } else {
-            //     range = [0, 0]
-            // }
-            // if (sort) {
-            //     sort = JSON.parse(sort)
-            // } else {
-            //     sort = { "name": "asc" }
-            // }
-            // if (filter) {
-            //     filter = JSON.parse(filter)
+            if (filter) {
+                filter = JSON.parse(filter)
 
-            //     ///////////////////////
-            //     // Exact value filters
-            //     ///////////////////////
-            //     if (filter._id) {
-            //         if (!mongoose.isValidObjectId(filter._id)) {
-            //             delete filter._id
-            //         }
-            //     }
+                if (filter._id) {
+                    if (!mongoose.isValidObjectId(filter._id)) {
+                        delete filter._id
+                    }
+                }
 
-            //     if (filter.name) {
-            //         filter.name = {
-            //             $regex: filter.name,
-            //             $options: "i"
-            //         }
-            //     }
+                if (filter.name) {
+                    filter.name = {
+                        $regex: filter.name,
+                        $options: "i"
+                    }
+                }
 
-
-
-            //     if (filter.category) {
-            //         if (!mongoose.isValidObjectId(filter.category)) {
-            //             delete filter.category
-            //         }
-            //     }
-
-            //     if (filter.brand) {
-            //         filter.brand = {
-            //             $regex: filter.brand,
-            //             $options: "i"
-            //         }
-            //     }
-
-            //     if (filter.description) {
-            //         filter.description = {
-            //             $regex: filter.description,
-            //             $options: "i"
-            //         }
-            //     }
+                if (filter.medicine_name) {
+                    filter.medicine_name = {
+                        $regex: filter.medicine_name,
+                        $options: "i"
+                    }
+                }
 
 
-            //     //  Normal kind
-            //     if (filter.other) {
-            //         filter.other = {
-            //             $regex: filter.other,
-            //             $options: "i"
-            //         }
-            //     }
-
-
-
-            //     // Eye glass kind
-            //     if (filter.eye_glass_type) {
-            //         filter.eye_glass_type = {
-            //             $regex: filter.eye_glass_type,
-            //             $options: "i"
-            //         }
-            //     }
-
-            //     // Medicine kind
-            //     if (filter.special_name) {
-            //         filter.special_name = {
-            //             $regex: filter.special_name,
-            //             $options: "i"
-            //         }
-            //     }
-
-            //     if (filter.strength) {
-            //         filter.strength = {
-            //             $regex: filter.strength,
-            //             $options: "i"
-            //         }
-            //     }
+                if (filter.genric_name) {
+                    filter.genric_name = {
+                        $regex: filter.genric_name,
+                        $options: "i"
+                    }
+                }
 
 
 
 
+                if (filter.category) {
+                    if (!mongoose.isValidObjectId(filter.category)) {
+                        delete filter.category
+                    }
+                }
 
 
-            //     //TODO Add special product type filters and range filters
-
-            //     // if (filter.medicine_type) {
-            //     //     filter.medicine_type = {
-            //     //         $regex: filter.medicine_type,
-            //     //         $options: "i"
-            //     //     }
-            //     // }
+            } else {
+                filter = {}
+            }
 
 
-            //     ///////////////////////
-            //     // Range value filters
-            //     ///////////////////////
+            const med_list = await MedicineProduct
+                .find(filter)
+                .populate('category')
+                .sort(sort)
+                .skip(range[0])
+                .limit(range[1])
+            const count = await MedicineProduct.countDocuments()
 
-            //     //TODO Add range filters
-
-
-
-
-            // } else {
-            //     filter = {}
-            // }
-
-
-            // let product_list
-            // let count
-            // if (filter) {
-            //     if (filter.kind === NormalProduct.modelName) {
-            //         delete filter.kind
-            //         product_list = await NormalProduct
-            //             .find(filter)
-            //             .populate('category')
-            //             .sort(sort)
-            //             .skip(range[0])
-            //             .limit(range[1])
-            //         count = await NormalProduct.countDocuments()
-            //     } else if (filter.kind === EyeGlassProduct.modelName) {
-            //         delete filter.kind
-            //         product_list = await EyeGlassProduct
-            //             .find(filter)
-            //             .populate('category')
-            //             .sort(sort)
-            //             .skip(range[0])
-            //             .limit(range[1])
-            //         count = await EyeGlassProduct.countDocuments()
-            //     } else if (filter.kind === MedicineProduct.modelName) {
-            //         delete filter.kind
-            //         product_list = await MedicineProduct
-            //             .find(filter)
-            //             .populate('category')
-            //             .sort(sort)
-            //             .skip(range[0])
-            //             .limit(range[1])
-            //         count = await MedicineProduct.countDocuments()
-
-            //     } else {
-            //         delete filter.kind
-            //         product_list = await Product
-            //             .find(filter)
-            //             .populate('category')
-            //             .sort(sort)
-            //             .skip(range[0])
-            //             .limit(range[1])
-            //         count = await Product.countDocuments()
-
-            //     }
-            // }
-
-            // const header = `products ${range[0] + 1}-${product_list.length + range[0]}/${count}`
-            // res.setHeader('Content-Range', header)
-            // res.status(200).json(product_list)
+            const header = `medicine_products ${range[0] + 1}-${med_list.length + range[0]}/${count}`
+            res.setHeader('Content-Range', header)
+            res.status(200).json(med_list)
 
         } catch (error) {
             console.error(error.message)

@@ -14,6 +14,8 @@ if (process.env.NODE_ENV === 'production') {
 
 
 
+
+
 const fetchJson = (url, options = {}) => {
     if (!options.headers) {
         options.headers = new Headers({ Accept: 'application/json' });
@@ -23,7 +25,9 @@ const fetchJson = (url, options = {}) => {
     return fetchUtils.fetchJson(url, options);
 }
 
-export default {
+
+
+const custom_provider =  {
     //done
     getList: (resource, params) => {
         const { page, perPage } = params.pagination;
@@ -88,10 +92,12 @@ export default {
                 data: json
             }
 
-          
 
             obj.data.id = obj.data._id
             delete obj.data._id
+
+            
+            //console.log(obj.data)
 
             return obj
 
@@ -127,13 +133,35 @@ export default {
     },
 
     // done
-    update: (resource, params) =>
-        fetchJson(`${apiUrl}/${resource}/${params.id}`, {
-            method: 'PUT',
-            body: JSON.stringify(params.data),
-        }).then(({ json }) => ({
-            data: { ...json, id: json._id },
-        })),
+    update: (resource, params) => {
+        if (resource === 'medicine-products') {
+            //let _headers = new Headers({ Accept: 'application/json' })
+            //_headers.set('Content-type', 'multipart/form-data')
+
+            let formData = new FormData();
+            params.data.files.forEach(file => formData.append("files", file))
+
+            params.data.files = undefined
+            formData.append("data", JSON.stringify(params.data));
+
+
+            return fetchJson(`${apiUrl}/${resource}/${params.id}`, {
+                method: 'PUT',
+                body: formData,
+            }).then(({ json }) => ({
+                data: { ...json, id: json._id },
+            }))
+
+        } else {
+
+            return fetchJson(`${apiUrl}/${resource}/${params.id}`, {
+                method: 'PUT',
+                body: JSON.stringify(params.data),
+            }).then(({ json }) => ({
+                data: { ...json, id: json._id },
+            }))
+        }
+    },
 
     updateMany: (resource, params) => {
         const query = {
@@ -147,13 +175,37 @@ export default {
 
     //done
     create: (resource, params) => {
-        //console.log(params.data)
-        return fetchJson(`${apiUrl}/${resource}`, {
-            method: 'POST',
-            body: JSON.stringify(params.data),
-        }).then(({ json }) => ({
-            data: { ...params.data, id: json._id },
-        }))
+        if (resource === 'medicine-products') {
+            //let _headers = new Headers({ Accept: 'application/json' })
+            //_headers.set('Content-type', 'multipart/form-data')
+
+            let formData = new FormData();
+            params.data.files.forEach(file => formData.append("files", file))
+
+            params.data.files = undefined
+            formData.append("data", JSON.stringify(params.data));
+
+
+            return fetchJson(`${apiUrl}/${resource}`, {
+                //headers : _headers,
+                method: 'POST',
+                body: formData,
+            }).then(({ json }) => ({
+                data: { ...params.data, id: json._id },
+            }))
+
+        } else {
+
+            return fetchJson(`${apiUrl}/${resource}`, {
+                method: 'POST',
+                body: JSON.stringify(params.data),
+            }).then(({ json }) => ({
+                data: { ...params.data, id: json._id },
+            }))
+        }
+
+
+
     },
 
     //done
@@ -173,3 +225,5 @@ export default {
         }).then(({ json }) => ({ data: json._ids }));
     },
 };
+
+export default custom_provider

@@ -140,11 +140,17 @@ router.delete(
             const id = req.params.id
             const caller = res.locals.user
             let user = await User.findById(id)
-            const rolesAvailable = user.roles
-                .filter(role => role.flag)
-                .map(role => role.type)
 
-            if (caller.roles.includes(roles.owner)) {
+          
+
+            const rolesAvailable = []
+            for (let key in user.roles) {
+                if (mongoose.isValidObjectId(user.roles[key])) {
+                    rolesAvailable.push(key)
+                }
+            }
+
+            if (mongoose.isValidObjectId(caller.roles[roles.owner])) {
                 // Owner
                 if (rolesAvailable.includes(roles.owner)) {
                     return res.status(401).json({ message: 'Access denied' })
@@ -153,7 +159,7 @@ router.delete(
 
                     res.status(200).json(output)
                 }
-            } else if (caller.roles.includes(roles.admin)) {
+            } else if (mongoose.isValidObjectId(caller.roles[roles.admin])) {
                 // Admin
                 if (rolesAvailable.includes(roles.owner) || rolesAvailable.includes(roles.admin)) {
                     return res.status(401).json({ message: 'Access denied' })
@@ -366,9 +372,9 @@ router.get('/',
                 if (filter.roles) {
                     const item = filter.roles
                     delete filter.roles
-                    
-                    filter[`roles.${item}`] =  {  $exists: true }
-      
+
+                    filter[`roles.${item}`] = { $exists: true }
+
                 }
                 if (filter.email) {
                     filter.email = {
@@ -440,7 +446,7 @@ router.get('/',
 
 
             let users_list = await User
-                .find(filter )
+                .find(filter)
                 .sort(sort)
                 .select('-password')
                 .skip(range[0])

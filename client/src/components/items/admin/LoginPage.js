@@ -62,7 +62,7 @@ const CustomLoginPage = ({ theme }) => {
                             />
 
                             <TextField
-                                variant='outlined'
+                                variant='outlined' 
                                 margin='normal'
                                 required
                                 fullWidth
@@ -76,10 +76,8 @@ const CustomLoginPage = ({ theme }) => {
                             <Box>
                                 <Button
                                     type='submit'
-                                    variant='contained'
                                     color='primary'
                                     variant='contained'
-                                    type='submit'
                                     sx={{
                                         marginTop: 2,
                                     }}
