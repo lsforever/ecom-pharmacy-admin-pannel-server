@@ -1,5 +1,6 @@
 {
     "mongoURI": "mongodb+srv://admin:admin123@cluster0.zpyqr.mongodb.net/main_database?retryWrites=true&w=majority",
+    "mongoURIxxxxx": "mongodb+srv://admin_001:hnxBeXM><.Vvsy6p@cluster0.29xuo.mongodb.net/main_database?retryWrites=true&w=majority",
     "jwtSecret": "TheJWTstringSecretForTheApp",
     "tokenLife": "3600000",
     "apiUrl": "http://localhost:5000/api",
@@ -7,6 +8,4 @@
     "GCS_PROJECT_ID": "niraamoy",
     "GCS_BUCKET_NAME": "niramoy_bucket",
     "STORAGE_BASE_URL": "https://storage.googleapis.com/"
-
-
 }

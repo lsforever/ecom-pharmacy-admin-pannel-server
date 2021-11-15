@@ -3,7 +3,7 @@ const router = express.Router()
 
 const { check, validationResult } = require('express-validator')
 
-const ProductCategory = require('../../models/products/ProductCategory')
+const MedicineGeneric = require('../../models/products/MedicineGeneric')
 const rolecheck = require('../../middlewares/rolecheck')
 const roles = require('../../utils/constants/roles')
 const auth = require('../../middlewares/auth')
@@ -55,7 +55,7 @@ router.delete(
 
 
 
-            await ProductCategory.deleteMany({
+            await MedicineGeneric.deleteMany({
 
                 '_id': {
                     $in: ids.map(id => mongoose.Types.ObjectId(id))
@@ -139,7 +139,7 @@ router.put(
 
             const name = req.body.name
 
-            let output = await ProductCategory.findByIdAndUpdate(req.params.id, { name })
+            let output = await MedicineGeneric.findByIdAndUpdate(req.params.id, { name })
             res.status(200).json(output)
 
         } catch (error) {
@@ -160,7 +160,7 @@ router.get('/:id',
     auth,
     async (req, res) => {
         try {
-            let output = await ProductCategory.findById(req.params.id)
+            let output = await MedicineGeneric.findById(req.params.id)
             res.status(200).json(output)
 
         } catch (error) {
@@ -202,7 +202,7 @@ router.post(
 
         try {
 
-            let item = new ProductCategory({
+            let item = new MedicineGeneric({
                 name
             })
 
@@ -265,15 +265,15 @@ router.get('/',
 
     
 
-            let cat_list = await ProductCategory
+            let cat_list = await MedicineGeneric
                 .find(filter)
                 .sort(sort)
                 .skip(range[0])
                 .limit(range[1])
 
         
-            const count = await ProductCategory.countDocuments()
-            const header = `product-categories ${range[0] + 1}-${cat_list.length + range[0]}/${count}`
+            const count = await MedicineGeneric.countDocuments()
+            const header = `product-med-generics ${range[0] + 1}-${cat_list.length + range[0]}/${count}`
             res.setHeader('Content-Range', header)
             res.status(200).json(cat_list)
 
