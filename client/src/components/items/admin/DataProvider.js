@@ -27,7 +27,7 @@ const fetchJson = (url, options = {}) => {
 
 
 
-const custom_provider =  {
+const custom_provider = {
     //done
     getList: (resource, params) => {
         const { page, perPage } = params.pagination;
@@ -80,6 +80,8 @@ const custom_provider =  {
                     total: parseInt(headers.get('content-range').split('/').pop(), 10),
                 }
 
+               
+
 
                 return obj
             });
@@ -96,8 +98,10 @@ const custom_provider =  {
             obj.data.id = obj.data._id
             delete obj.data._id
 
+
             
-            //console.log(obj.data)
+
+    
 
             return obj
 

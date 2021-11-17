@@ -35,9 +35,13 @@ app.use('/api/test', (req, res) => {
 // Define Routes
 app.use('/api/auth', require('./api/routes/auth'))
 app.use('/api/users', require('./api/routes/users'))
+
+//Products
 app.use('/api/products', require('./api/routes/products/products'))
 app.use('/api/product-categories', require('./api/routes/products/product_categories'))
+app.use('/api/product-companies', require('./api/routes/products/company'))
 app.use('/api/medicine-products', require('./api/routes/products/medicine_product'))
+app.use('/api/product-medicine-generic', require('./api/routes/products/medicine_generic'))
 
 app.use('/api/vendors', require('./api/routes/vendors/vendors')) 
 

@@ -3,7 +3,7 @@ const router = express.Router()
 
 const { check, validationResult } = require('express-validator')
 
-const MedicineGeneric = require('../../models/products/MedicineGeneric')
+const Company = require('../../models/products/Company')
 const rolecheck = require('../../middlewares/rolecheck')
 const roles = require('../../utils/constants/roles')
 const auth = require('../../middlewares/auth')
@@ -55,7 +55,7 @@ router.delete(
 
 
 
-            await MedicineGeneric.deleteMany({
+            await Company.deleteMany({
 
                 '_id': {
                     $in: ids.map(id => mongoose.Types.ObjectId(id))
@@ -95,7 +95,7 @@ router.delete(
 
             const id = req.params.id
             if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid id received' })
-            let output = await ProductCategory.findByIdAndDelete(mongoose.Types.ObjectId(id))
+            let output = await Company.findByIdAndDelete(mongoose.Types.ObjectId(id))
             res.status(200).json(output)
 
 
@@ -139,10 +139,15 @@ router.put(
 
             const name = req.body.name
 
-            let output = await MedicineGeneric.findByIdAndUpdate(req.params.id, { name })
+            let output = await Company.findByIdAndUpdate(req.params.id, { name })
             res.status(200).json(output)
 
         } catch (error) {
+            if (error.code === 11000) {
+                //Duplicate data
+                return res.status(400).json({ message: 'Company with that name already exists' })
+            }
+
             console.error(error.message)
             res.status(500).send('Server Error')
         }
@@ -160,7 +165,7 @@ router.get('/:id',
     auth,
     async (req, res) => {
         try {
-            let output = await MedicineGeneric.findById(req.params.id)
+            let output = await Company.findById(req.params.id)
             res.status(200).json(output)
 
         } catch (error) {
@@ -183,7 +188,7 @@ router.post(
 
     ],
     auth,
-    rolecheck([
+    rolecheck([ 
         roles.owner,
         roles.admin
     ]),
@@ -202,7 +207,7 @@ router.post(
 
         try {
 
-            let item = new MedicineGeneric({
+            let item = new Company({
                 name
             })
 
@@ -211,6 +216,12 @@ router.post(
             res.status(200).json({ _id: item._id })
 
         } catch (error) {
+
+            if (error.code === 11000) {
+                //Duplicate data
+                return res.status(400).json({ message: 'Company with that name already exists' })
+            }
+
             console.error(error.message)
             res.status(500).send('Server Error')
         }
@@ -265,15 +276,15 @@ router.get('/',
 
     
 
-            let cat_list = await MedicineGeneric
+            let cat_list = await Company
                 .find(filter)
                 .sort(sort)
                 .skip(range[0])
                 .limit(range[1])
 
         
-            const count = await MedicineGeneric.countDocuments()
-            const header = `product-med-generics ${range[0] + 1}-${cat_list.length + range[0]}/${count}`
+            const count = await Company.countDocuments()
+            const header = `product-Company ${range[0] + 1}-${cat_list.length + range[0]}/${count}`
             res.setHeader('Content-Range', header)
             res.status(200).json(cat_list)
 

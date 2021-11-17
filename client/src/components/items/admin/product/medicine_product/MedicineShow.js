@@ -24,7 +24,8 @@ const MedicineShow = (props) => {
 
                 <TextField label="Medicine Name" source='medicine_name' />
                 
-                <TextField label="Genric Name" source='genric_name' />
+                <TextField label="Genric Name" source='generic.name' />
+                <TextField label="Company Name" source='company.name' />
                 <DateField label="Created Date" source="createdAt" />
                 <DateField label="Updated Date" source="updatedAt" />
 
@@ -40,12 +41,10 @@ const MedicineShow = (props) => {
 
 
 
-                <ArrayField label="Product Variations" source="variations">
+                <ArrayField label="Medicine Types" source="types">
                     <Datagrid>
 
-                        <TextField label="Company Name" source='company_name' />
-                        <ArrayField label="Medicine Types" source="medicine_types">
-                            <Datagrid>
+                      
 
 
                                 <TextField label="Type Name" source='type_name' />
@@ -64,8 +63,7 @@ const MedicineShow = (props) => {
 
                             </Datagrid>
                         </ArrayField>
-                    </Datagrid>
-                </ArrayField>
+             
 
             </SimpleShowLayout>
         </Show>

@@ -76,27 +76,23 @@ const MedicineTypeSchema = mongoose.Schema({
     strengths: [MedicineStrengthSchema]
 })
 
-const MedicineCompanyProductSchema = mongoose.Schema({
-    // company: { 
-    //     type: mongoose.Types.ObjectId,
-    //     ref: 'company',
-    //     unique: true
-    // },
-    company_name: {
-        type: String,
-    },
-    medicine_types: [MedicineTypeSchema],
-})
+
 
 const MedicineSchema = mongoose.Schema({
     medicine_name: {
         type: String,
         unique: true,
     },
-    genric_name: {
-        type: String,
+    generic: {
+        type: mongoose.Types.ObjectId,
+        ref: 'product_medicine_generic'
     },
-    variations: [MedicineCompanyProductSchema],
+
+    company: {
+        type: mongoose.Types.ObjectId,
+        ref: 'company'
+    },
+    types: [MedicineTypeSchema],
   
     // provide (local or foreign) to field 'from'
     from: {

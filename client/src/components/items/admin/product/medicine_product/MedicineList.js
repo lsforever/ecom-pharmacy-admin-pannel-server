@@ -33,7 +33,8 @@ const UserList = (props) => {
             <Datagrid>
                 <TextField label="Id" source='id' />
                 <TextField label="Medicine Name" source='medicine_name' />
-                <TextField label="Genric Name" source='genric_name' />
+                <TextField label="Genric Name" source='generic.name' />
+                <TextField label="Company Name" source='company.name' />
                 
                 <BooleanField label="Is Published" source="flag" />
                 <TextField label="From" source='from' />

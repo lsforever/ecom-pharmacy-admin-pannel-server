@@ -87,11 +87,15 @@ const Admin = () => {
                 {/* <Resource name="products" icon={SportsBaseballRoundedIcon} options={{ label: 'Products' }} list={ProductList} create={ProductCreate} edit={ProductEdit} show={ProductShow} /> */}
 
                 <Resource name="medicine-products" icon={SportsBaseballRoundedIcon} options={{ label: 'Medicine Products' }} list={MedicineList} create={MedicineCreate} edit={MedicineEdit} show={MedicineShow} />
+                
                 {/* <Resource name="product-categories" icon={PeopleAltRoundedIcon} options={{ label: 'Product Categories'}} list={ProductCategoryList} create={ProductCategoryCreate} edit={ProductCategoryEdit} />
-                <Resource name="vendors" icon={SportsBaseballRoundedIcon} options={{ label: 'Vendors' }} list={VendorList} create={VendorCreate} edit={VendorEdit} show={VendorShow} /> */}
+                 */}
+                {/* <Resource name="vendors" icon={SportsBaseballRoundedIcon} options={{ label: 'Vendors' }} list={VendorList} create={VendorCreate} edit={VendorEdit} show={VendorShow} /> */}
 
 
-
+                <Resource name="product-companies"/>
+                <Resource name="product-medicine-generic"/>
+              
 
 
 

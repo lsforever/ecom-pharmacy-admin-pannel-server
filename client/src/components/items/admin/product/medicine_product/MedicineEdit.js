@@ -15,35 +15,45 @@ import {
 
     TextField,
     FunctionField,
+
+    ReferenceInput,
+    AutocompleteInput,
+    SelectInput ,
+
 } from 'react-admin';
 
 import RichTextInput from 'ra-input-rich-text';
+
+import CustomReferenceInput from './CustomReferenceInput';
 
 
 const transform = data => {
 
     let files = []
 
-    if (data.variations) {
-        data.variations.forEach(variation => {
-            if (variation.medicine_types) {
-                variation.medicine_types.forEach(type => {
-                    if (type.strengths) {
-                        type.strengths.map(strength => {
-                            if (strength.image_edit) {
-                                files.push(strength.image_edit.rawFile)
-                                strength.image = files.length - 1
-                            }
-                            strength.image_edit = undefined
-                            return strength
-                        })
+    if (data.types) {
+
+
+        data.types.forEach(type => {
+            if (type.strengths) {
+                type.strengths.map(strength => {
+                    if (strength.image_edit) {
+                        files.push(strength.image_edit.rawFile)
+                        strength.image = files.length - 1
                     }
+                    strength.image_edit = undefined
+                    return strength
                 })
             }
         })
+
+
     }
 
     data.files = files
+
+    if(data.generic) data.generic = data.generic._id
+    if(data.company) data.company = data.company._id
 
     return data
 }
@@ -72,7 +82,24 @@ const MedicineEdit = (props) => {
 
                 <TextInput label="Medicine Name" source='medicine_name' validate={required('Category is required')} />
                 <BooleanInput label="Is Published" source="flag" />
-                <TextInput label="Genric Name" source='genric_name' validate={required('Category is required')} />
+
+
+
+                <CustomReferenceInput
+                    source="generic._id"
+                    resource_name="Generic"
+                    reference="product-medicine-generic"
+                    allowEmpty
+                    validate={required('Genric is required')}
+                />
+
+                <CustomReferenceInput
+                    source="company._id"
+                    resource_name="Company"
+                    reference="product-companies"
+                    allowEmpty
+                    validate={required('Company is required')}
+                />
 
                 <RadioButtonGroupInput label="Medicine From" source="from" initialValue="local" optionText="name" optionValue="id" choices={[
                     { id: 'local', name: 'Local' },
@@ -80,20 +107,7 @@ const MedicineEdit = (props) => {
                 ]} />
 
 
-                <ImageInput
-                    source="sssssssss"
-                    label="Image to upload"
-                    accept="image/png, image/jpg, image/jpeg"
-                    maxSize={2 * 1024 * 1024}
-                    placeholder={
-                        <p>
-                            Click here or Drop your file here
-                        </p>
-                    }
-                >
-                    <ImageField source="src" title="images" />
 
-                </ImageInput>
 
 
                 <RichTextInput label="Ingredients" source='ingredients' />
@@ -105,77 +119,73 @@ const MedicineEdit = (props) => {
 
 
 
-                <ArrayInput label="Product Variations" source="variations">
+                <ArrayInput label="Medicine Types" source="types">
                     <SimpleFormIterator>
 
-                        <TextInput label="Company Name" source='company_name' validate={required('Category is required')} />
-                        <ArrayInput label="Medicine Types" source="medicine_types">
+
+
+
+                        <TextInput label="Type Name" source='type_name' validate={required('Category is required')} />
+                        <ArrayInput label="Strengths" source="strengths">
                             <SimpleFormIterator>
 
+                                <TextInput label="Strength Name" source='strength_name' validate={required('Category is required')} />
 
-                                <TextInput label="Type Name" source='type_name' validate={required('Category is required')} />
-                                <ArrayInput label="Strengths" source="strengths">
-                                    <SimpleFormIterator>
-
-                                        <TextInput label="Strength Name" source='strength_name' validate={required('Category is required')} />
-
-                                        <TextInput label="Pack Size" source='pack_size' />
-                                        <NumberInput label="Strip" source='strip' />
-                                        <NumberInput label="Box" source='box' />
+                                <TextInput label="Pack Size" source='pack_size' />
+                                <NumberInput label="Strip" source='strip' />
+                                <NumberInput label="Box" source='box' />
 
 
 
-                                        <TextField label="Current Image" source="fake_path_001" />
-                                        <FormDataConsumer>
-                                            {({ 
-                                                 formData, // The whole form data
-                                                 scopedFormData, // The data for this item of the ArrayInput
-                                                 getSource, // A function to get the valid source inside an ArrayInput
-                                                ...rest }) =>
+                                <TextField label="Current Image" source="fake_path_001" />
+                                <FormDataConsumer>
+                                    {({
+                                        formData, // The whole form data
+                                        scopedFormData, // The data for this item of the ArrayInput
+                                        getSource, // A function to get the valid source inside an ArrayInput
+                                        ...rest }) =>
 
-                                                scopedFormData && scopedFormData.image_url ? (
-                                                    <img
-                                                        title="Current Image"
-                                                        alt="Not availble"
-                                                        src={`${scopedFormData.image_url}`}
-                                                        {...rest}
-                                                    />
+                                        scopedFormData && scopedFormData.image_url ? (
+                                            <img
+                                                title="Current Image"
+                                                alt="Not availble"
+                                                src={`${scopedFormData.image_url}`}
+                                                {...rest}
+                                            />
 
-                                                ) : <FunctionField
-                                                addLabel="false"
-                                                render={record => 'No Image added currently for this'} {...rest} />
-
-
-                                            }
-                                        </FormDataConsumer>
-
-                                        <ImageInput
-                                            source="image_edit"
-                                            label="Image to upload"
-                                            accept="image/png, image/jpg, image/jpeg"
-                                            maxSize={2 * 1024 * 1024}
-                                            placeholder={
-                                                <p>
-                                                    Click here or Drop your image here , if you want to edit it
-                                                </p>
-                                            }
-                                        >
-                                            <ImageField source="src" title="images" />
-
-                                        </ImageInput>
+                                        ) : <FunctionField
+                                            addLabel="false"
+                                            render={record => 'No Image added currently for this'} {...rest} />
 
 
+                                    }
+                                </FormDataConsumer>
 
-                                        {/* <TextField label="Current Image" source="strength_name" />
+                                <ImageInput
+                                    source="image_edit"
+                                    label="Image to upload"
+                                    accept="image/png, image/jpg, image/jpeg"
+                                    maxSize={2 * 1024 * 1024}
+                                    placeholder={
+                                        <p>
+                                            Click here or Drop your image here , if you want to edit it
+                                        </p>
+                                    }
+                                >
+                                    <ImageField source="src" title="images" />
+
+                                </ImageInput>
+
+
+
+                                {/* <TextField label="Current Image" source="strength_name" />
                                         <ImageField label="Current Image" source="image_url" /> */}
-
-
-                                    </SimpleFormIterator>
-                                </ArrayInput>
 
 
                             </SimpleFormIterator>
                         </ArrayInput>
+
+
                     </SimpleFormIterator>
                 </ArrayInput>
 

@@ -209,53 +209,58 @@ router.put(
                 return res.status(401).json({ message: 'Access denied' })
             }
 
+
             let medicine = await MedicineProduct.findById(req.params.id)
             if (!medicine) return res.status(400).json({ message: 'No such medicine product available to update' })
             let old_files_links = []
-            if (medicine.variations) {
-                medicine.variations.forEach(variation => {
-                    if (variation.medicine_types) {
-                        variation.medicine_types.forEach(type => {
-                            if (type.strengths) {
-                                type.strengths.forEach(strength => {
-                                    if (strength.image) {
-                                        old_files_links.push(strength.image)
-                                    }
-                                })
-
+            if (medicine.types) {
+                medicine.types.forEach(type => {
+                    if (type.strengths) {
+                        type.strengths.forEach(strength => {
+                            if (strength.image) {
+                                old_files_links.push(strength.image)
                             }
-                        }
-                        )
+                        })
+
                     }
                 }
                 )
+
             }
 
 
 
 
 
-            medicine.overwrite(JSON.parse(req.body.data))
+            const body = JSON.parse(req.body.data)
+            if (body.generic && body.company) {
+                if (mongoose.isValidObjectId(body.generic) && mongoose.isValidObjectId(body.company)) {
+
+                } else {
+                    return res.status(400).json({ message: 'Invalid generic ID or company ID' })
+                }
+                body.generic = mongoose.Types.ObjectId(body.generic)
+                body.company = mongoose.Types.ObjectId(body.company)
+
+            } else {
+                return res.status(400).json({ message: 'Medicine with that name already exists' })
+            }
+            medicine.overwrite(body)
 
             let new_files_links = []
-            if (medicine.variations) {
-                await Promise.all(medicine.variations.map(async variation => {
-                    if (variation.medicine_types) {
-                        await Promise.all(variation.medicine_types.map(async type => {
-                            if (type.strengths) {
-                                await Promise.all(type.strengths.map(async strength => {
-                                    // Checking if the image is updated (Checking if the string is a index  number of file array)
-                                    if (strength.image && !isNaN(strength.image) && Number.isInteger(parseFloat(strength.image))) {
-                                        const url = await uploadImage(req.files[parseInt(strength.image)], MedicineProduct.modelName, strength._id + ''+Date.now())
-                                        const end_url = url.split("/").slice(-2).join("/")
-                                        strength.image = end_url
-                                        
-                                    }
-                                    new_files_links.push(strength.image)
-                                    return strength
-                                })
-                                )
+            if (medicine.types) {
+                await Promise.all(medicine.types.map(async type => {
+                    if (type.strengths) {
+                        await Promise.all(type.strengths.map(async strength => {
+                            // Checking if the image is updated (Checking if the string is a index  number of file array)
+                            if (strength.image && !isNaN(strength.image) && Number.isInteger(parseFloat(strength.image))) {
+                                const url = await uploadImage(req.files[parseInt(strength.image)], MedicineProduct.modelName, strength._id + '' + Date.now())
+                                const end_url = url.split("/").slice(-2).join("/")
+                                strength.image = end_url
+
                             }
+                            new_files_links.push(strength.image)
+                            return strength
                         })
                         )
                     }
@@ -280,6 +285,12 @@ router.put(
 
 
         } catch (error) {
+
+            if (error.code === 11000) {
+                //Duplicate data
+                return res.status(400).json({ message: 'Medicine with that name already exists' })
+            }
+
             console.error(error.message)
             res.status(500).send('Server Error')
         }
@@ -297,7 +308,11 @@ router.get('/:id',
     auth,
     async (req, res) => {
         try {
-            let output = await MedicineProduct.findById(req.params.id)
+            let output = await MedicineProduct
+                .findById(req.params.id)
+                .populate('category')
+                .populate('generic')
+                .populate('company')
             res.status(200).json(output)
 
         } catch (error) {
@@ -335,23 +350,33 @@ router.post(
 
         try {
 
-            const medicine = new MedicineProduct(JSON.parse(req.body.data))
+            const body = JSON.parse(req.body.data)
+            if (body.generic && body.company) {
+                if (mongoose.isValidObjectId(body.generic) && mongoose.isValidObjectId(body.company)) {
 
-            if (medicine.variations) {
-                await Promise.all(medicine.variations.map(async variation => {
-                    if (variation.medicine_types) {
-                        await Promise.all(variation.medicine_types.map(async type => {
-                            if (type.strengths) {
-                                await Promise.all(type.strengths.map(async strength => {
-                                    if (strength.image) {
-                                        const url = await uploadImage(req.files[parseInt(strength.image)], MedicineProduct.modelName, strength._id + '')
-                                        const end_url = url.split("/").slice(-2).join("/")
-                                        strength.image = end_url
-                                    }
-                                    return strength
-                                })
-                                )
+                } else {
+                    return res.status(400).json({ message: 'Invalid generic ID or company ID' })
+                }
+                body.generic = mongoose.Types.ObjectId(body.generic)
+                body.company = mongoose.Types.ObjectId(body.company)
+
+            } else {
+                return res.status(400).json({ message: 'Medicine with that name already exists' })
+            }
+
+
+            const medicine = new MedicineProduct(body)
+
+            if (medicine.types) {
+                await Promise.all(medicine.types.map(async type => {
+                    if (type.strengths) {
+                        await Promise.all(type.strengths.map(async strength => {
+                            if (strength.image) {
+                                const url = await uploadImage(req.files[parseInt(strength.image)], MedicineProduct.modelName, strength._id + '')
+                                const end_url = url.split("/").slice(-2).join("/")
+                                strength.image = end_url
                             }
+                            return strength
                         })
                         )
                     }
@@ -365,11 +390,11 @@ router.post(
 
         } catch (error) {
 
-            if(error.code === 11000){
+            if (error.code === 11000) {
                 //Duplicate data
-                return res.status(400).json({message:'Medicine with that name already exists'})
+                return res.status(400).json({ message: 'Medicine with that name already exists' })
             }
-         
+
             console.error(error.message)
             res.status(500).send('Server Error')
         }
@@ -452,10 +477,14 @@ router.get('/',
             const med_list = await MedicineProduct
                 .find(filter)
                 .populate('category')
+                .populate('generic')
+                .populate('company')
                 .sort(sort)
                 .skip(range[0])
                 .limit(range[1])
             const count = await MedicineProduct.countDocuments()
+
+        
 
             const header = `medicine_products ${range[0] + 1}-${med_list.length + range[0]}/${count}`
             res.setHeader('Content-Range', header)

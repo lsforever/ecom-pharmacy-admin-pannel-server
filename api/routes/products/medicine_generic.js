@@ -143,6 +143,13 @@ router.put(
             res.status(200).json(output)
 
         } catch (error) {
+
+            if (error.code === 11000) {
+                //Duplicate data
+                return res.status(400).json({ message: 'Generic with that name already exists' })
+            }
+
+
             console.error(error.message)
             res.status(500).send('Server Error')
         }
@@ -211,6 +218,12 @@ router.post(
             res.status(200).json({ _id: item._id })
 
         } catch (error) {
+
+            if (error.code === 11000) {
+                //Duplicate data
+                return res.status(400).json({ message: 'Generic with that name already exists' })
+            }
+            
             console.error(error.message)
             res.status(500).send('Server Error')
         }
