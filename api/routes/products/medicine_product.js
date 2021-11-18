@@ -80,20 +80,15 @@ router.delete(
             try {
                 let files_links = []
                 medicines.forEach(medicine => {
-                    if (medicine.variations) {
-                        medicine.variations.forEach(variation => {
-                            if (variation.medicine_types) {
-                                variation.medicine_types.forEach(type => {
-                                    if (type.strengths) {
-                                        type.strengths.forEach(strength => {
-                                            if (strength.image) {
-                                                files_links.push(strength.image)
-                                            }
-                                        })
-
+                    if (medicine.types) {
+                        medicine.types.forEach(type => {
+                            if (type.strengths) {
+                                type.strengths.forEach(strength => {
+                                    if (strength.image) {
+                                        files_links.push(strength.image)
                                     }
-                                }
-                                )
+                                })
+
                             }
                         }
                         )
@@ -143,20 +138,15 @@ router.delete(
             let medicine = await MedicineProduct.findById(req.params.id)
             if (!medicine) return res.status(400).json({ message: 'No such medicine product available to delete' })
             let files_links = []
-            if (medicine.variations) {
-                medicine.variations.forEach(variation => {
-                    if (variation.medicine_types) {
-                        variation.medicine_types.forEach(type => {
-                            if (type.strengths) {
-                                type.strengths.forEach(strength => {
-                                    if (strength.image) {
-                                        files_links.push(strength.image)
-                                    }
-                                })
-
+            if (medicine.types) {
+                medicine.types.forEach(type => {
+                    if (type.strengths) {
+                        type.strengths.forEach(strength => {
+                            if (strength.image) {
+                                files_links.push(strength.image)
                             }
-                        }
-                        )
+                        })
+
                     }
                 }
                 )
@@ -230,22 +220,7 @@ router.put(
 
 
 
-
-
-            const body = JSON.parse(req.body.data)
-            if (body.generic && body.company) {
-                if (mongoose.isValidObjectId(body.generic) && mongoose.isValidObjectId(body.company)) {
-
-                } else {
-                    return res.status(400).json({ message: 'Invalid generic ID or company ID' })
-                }
-                body.generic = mongoose.Types.ObjectId(body.generic)
-                body.company = mongoose.Types.ObjectId(body.company)
-
-            } else {
-                return res.status(400).json({ message: 'Medicine with that name already exists' })
-            }
-            medicine.overwrite(body)
+            medicine.overwrite(JSON.parse(req.body.data))
 
             let new_files_links = []
             if (medicine.types) {
@@ -267,8 +242,6 @@ router.put(
                 })
                 )
             }
-
-
 
 
 
@@ -313,6 +286,7 @@ router.get('/:id',
                 .populate('category')
                 .populate('generic')
                 .populate('company')
+                .populate("types.type")
             res.status(200).json(output)
 
         } catch (error) {
@@ -350,22 +324,8 @@ router.post(
 
         try {
 
-            const body = JSON.parse(req.body.data)
-            if (body.generic && body.company) {
-                if (mongoose.isValidObjectId(body.generic) && mongoose.isValidObjectId(body.company)) {
 
-                } else {
-                    return res.status(400).json({ message: 'Invalid generic ID or company ID' })
-                }
-                body.generic = mongoose.Types.ObjectId(body.generic)
-                body.company = mongoose.Types.ObjectId(body.company)
-
-            } else {
-                return res.status(400).json({ message: 'Medicine with that name already exists' })
-            }
-
-
-            const medicine = new MedicineProduct(body)
+            const medicine = new MedicineProduct(JSON.parse(req.body.data))
 
             if (medicine.types) {
                 await Promise.all(medicine.types.map(async type => {
@@ -384,6 +344,7 @@ router.post(
                 )
             }
 
+            console.log(medicine)
 
             await medicine.save()
             res.status(200).json({ _id: medicine._id })
@@ -479,12 +440,13 @@ router.get('/',
                 .populate('category')
                 .populate('generic')
                 .populate('company')
+                .populate("types.type")
                 .sort(sort)
                 .skip(range[0])
                 .limit(range[1])
             const count = await MedicineProduct.countDocuments()
 
-        
+
 
             const header = `medicine_products ${range[0] + 1}-${med_list.length + range[0]}/${count}`
             res.setHeader('Content-Range', header)
