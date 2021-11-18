@@ -55,7 +55,7 @@ function QuickCreateButton({ onChange ,reference, resource_name ,source }) {
                     form.change(source, data.id);
                     onChange();
                 },
-                onFailure: ({ error }) => {
+                onFailure:  error  => {
                     notify(error.message, 'error');
                 }
             }

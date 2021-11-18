@@ -23,13 +23,14 @@ const CustomReferenceInput = props => {
     const handleChange = useCallback(() => setVersion(version + 1), [version]);
 
     return (
+        
         <div className={classes.root}>
 
 
 
 
             <div>
-                <ReferenceInput label={props.resource_name} key={version} {...props}>
+                <ReferenceInput {...props} key={version}  label={props.resource_name} >
                     <AutocompleteInput optionText="name" optionValue="_id" />
                 </ReferenceInput>
 

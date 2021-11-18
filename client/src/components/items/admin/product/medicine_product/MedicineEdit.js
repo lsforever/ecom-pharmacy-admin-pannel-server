@@ -16,9 +16,6 @@ import {
     TextField,
     FunctionField,
 
-    ReferenceInput,
-    AutocompleteInput,
-    SelectInput ,
 
 } from 'react-admin';
 
@@ -35,6 +32,8 @@ const transform = data => {
 
 
         data.types.forEach(type => {
+            if (type.type) type.type = type.type._id
+
             if (type.strengths) {
                 type.strengths.map(strength => {
                     if (strength.image_edit) {
@@ -52,8 +51,8 @@ const transform = data => {
 
     data.files = files
 
-    if(data.generic) data.generic = data.generic._id
-    if(data.company) data.company = data.company._id
+    if (data.generic) data.generic = data.generic._id
+    if (data.company) data.company = data.company._id
 
     return data
 }
@@ -80,8 +79,10 @@ const MedicineEdit = (props) => {
             <SimpleForm  >
 
 
-                <TextInput label="Medicine Name" source='medicine_name' validate={required('Category is required')} />
                 <BooleanInput label="Is Published" source="flag" />
+           
+
+                <TextInput label="Medicine Name" source='medicine_name' validate={required('Category is required')} />
 
 
 
@@ -101,22 +102,6 @@ const MedicineEdit = (props) => {
                     validate={required('Company is required')}
                 />
 
-                <RadioButtonGroupInput label="Medicine From" source="from" initialValue="local" optionText="name" optionValue="id" choices={[
-                    { id: 'local', name: 'Local' },
-                    { id: 'foreign', name: 'Foreign' },
-                ]} />
-
-
-
-
-
-                <RichTextInput label="Ingredients" source='ingredients' />
-                <RichTextInput label="Indication" source='indication' />
-                <RichTextInput label="Usage" source='usage' />
-                <RichTextInput label="Side effects" source='side_effects' />
-                <RichTextInput label="Pregnancy and Lactation" source='preg_lac' />
-                <RichTextInput label="Precautions" source='precautions' />
-
 
 
                 <ArrayInput label="Medicine Types" source="types">
@@ -125,7 +110,15 @@ const MedicineEdit = (props) => {
 
 
 
-                        <TextInput label="Type Name" source='type_name' validate={required('Category is required')} />
+                        <CustomReferenceInput
+                            source="type._id"
+                            resource_name="Medicine Type"
+                            reference="product-medicine-type"
+                            allowEmpty
+                            validate={required('Type is required')}
+                        />
+
+
                         <ArrayInput label="Strengths" source="strengths">
                             <SimpleFormIterator>
 
@@ -189,6 +182,17 @@ const MedicineEdit = (props) => {
                     </SimpleFormIterator>
                 </ArrayInput>
 
+                <RadioButtonGroupInput label="Medicine From" source="from" initialValue="local" optionText="name" optionValue="id" choices={[
+                    { id: 'local', name: 'Local' },
+                    { id: 'foreign', name: 'Foreign' },
+                ]} />
+
+                <RichTextInput label="Ingredients" source='ingredients' />
+                <RichTextInput label="Indication" source='indication' />
+                <RichTextInput label="Usage" source='usage' />
+                <RichTextInput label="Side effects" source='side_effects' />
+                <RichTextInput label="Pregnancy and Lactation" source='preg_lac' />
+                <RichTextInput label="Precautions" source='precautions' />
 
 
 

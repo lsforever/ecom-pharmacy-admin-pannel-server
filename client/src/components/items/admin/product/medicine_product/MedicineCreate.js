@@ -15,7 +15,6 @@ import {
 
 } from 'react-admin';
 
-import QuickCreateButton from './QuickCreateButton'
 
 //import { useFormState } from 'react-final-form';
 
@@ -71,15 +70,10 @@ const MedicineCreate = (props) => {
             <SimpleForm  >
 
 
+                <BooleanInput label="Is Published" source="flag" initialValue={true} />
+
+
                 <TextInput label="Medicine Name" source='medicine_name' validate={required('Medicine Name is required')} />
-
-
-
-
-
-
-                <BooleanInput label="Is Published" source="flag" />
-
 
 
                 <CustomReferenceInput
@@ -99,27 +93,23 @@ const MedicineCreate = (props) => {
                 />
 
 
-                <RadioButtonGroupInput label="Medicine From" source="from" initialValue="local" optionText="name" optionValue="id" choices={[
-                    { id: 'local', name: 'Local' },
-                    { id: 'foreign', name: 'Foreign' },
-                ]} />
-
-
-                <RichTextInput label="Ingredients" source='ingredients' />
-                <RichTextInput label="Indication" source='indication' />
-                <RichTextInput label="Usage" source='usage' />
-                <RichTextInput label="Side effects" source='side_effects' />
-                <RichTextInput label="Pregnancy and Lactation" source='preg_lac' />
-                <RichTextInput label="Precautions" source='precautions' />
 
 
                 <ArrayInput label="Medicine Types" source="types" >
                     <SimpleFormIterator>
 
+                        
+
+                        <CustomReferenceInput
+                            source="type"
+                            resource_name="Medicine Type"
+                            reference="product-medicine-type"
+                            custom_ref="product-medicine-type"
+                            allowEmpty
+                            validate={required('Type is required')}
+                        />
 
 
-
-                        <TextInput label="Type Name" source='type_name' validate={required('Category is required')} />
                         <ArrayInput label="Strengths" source="strengths">
                             <SimpleFormIterator>
 
@@ -148,6 +138,19 @@ const MedicineCreate = (props) => {
                     </SimpleFormIterator>
                 </ArrayInput>
 
+
+                <RadioButtonGroupInput label="Medicine From" source="from" initialValue="local" optionText="name" optionValue="id" choices={[
+                    { id: 'local', name: 'Local' },
+                    { id: 'foreign', name: 'Foreign' },
+                ]} />
+
+
+                <RichTextInput label="Ingredients" source='ingredients' />
+                <RichTextInput label="Indication" source='indication' />
+                <RichTextInput label="Usage" source='usage' />
+                <RichTextInput label="Side effects" source='side_effects' />
+                <RichTextInput label="Pregnancy and Lactation" source='preg_lac' />
+                <RichTextInput label="Precautions" source='precautions' />
 
 
 

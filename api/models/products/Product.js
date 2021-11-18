@@ -72,7 +72,10 @@ MedicineStrengthSchema.set('toObject', { virtuals: true })
 MedicineStrengthSchema.set('toJSON', { virtuals: true })
 
 const MedicineTypeSchema = mongoose.Schema({
-    type_name: { type: String },
+    type: { 
+        type: mongoose.Types.ObjectId,
+        ref: 'product_medicine_type'
+     },
     strengths: [MedicineStrengthSchema]
 })
 

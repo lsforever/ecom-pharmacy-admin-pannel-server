@@ -92,9 +92,10 @@ const Admin = () => {
                  */}
                 {/* <Resource name="vendors" icon={SportsBaseballRoundedIcon} options={{ label: 'Vendors' }} list={VendorList} create={VendorCreate} edit={VendorEdit} show={VendorShow} /> */}
 
-
+               
                 <Resource name="product-companies"/>
                 <Resource name="product-medicine-generic"/>
+                <Resource name="product-medicine-type"/>
               
 
 
