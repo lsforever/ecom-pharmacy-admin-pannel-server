@@ -23,13 +23,36 @@ const MedicineShow = (props) => {
 
 
                 <TextField label="Medicine Name" source='medicine_name' />
-                
+
                 <TextField label="Genric Name" source='generic.name' />
                 <TextField label="Company Name" source='company.name' />
-                <DateField label="Created Date" source="createdAt" />
-                <DateField label="Updated Date" source="updatedAt" />
+
+
+
+
+
+                <ArrayField label="Medicine Types" source="types">
+                    <Datagrid>
+                        <TextField label="Type Name" source='type.name' />
+                        <TextField label="Type Commission" source='type.com' />
+                        <ArrayField label="Strengths" source="strengths">
+                            <Datagrid>
+
+                                <TextField label="Strength Name" source='strength_name' />
+                                <TextField label="Pack Size" source='pack_size' />
+                                <NumberField label="Strip" source='strip' />
+                                <NumberField label="Box" source='box' />
+                                <ImageField label="Image" source="image_url" title="No Image Added For this" />
+
+                            </Datagrid>
+                        </ArrayField>
+                    </Datagrid>
+                </ArrayField>
+
 
                 <TextField label="Medicine From" source="from" />
+                <DateField label="Created Date" source="createdAt" />
+                <DateField label="Updated Date" source="updatedAt" />
 
 
                 <RichTextField label="Ingredients" source='ingredients' />
@@ -38,32 +61,6 @@ const MedicineShow = (props) => {
                 <RichTextField label="Side effects" source='side_effects' />
                 <RichTextField label="Pregnancy and Lactation" source='preg_lac' />
                 <RichTextField label="Precautions" source='precautions' />
-
-
-
-                <ArrayField label="Medicine Types" source="types">
-                    <Datagrid>
-
-                      
-
-
-                                <TextField label="Type Name" source='type_name' />
-                                <ArrayField label="Strengths" source="strengths">
-                                    <Datagrid>
-
-                                        <TextField label="Strength Name" source='strength_name' />
-                                        <TextField label="Pack Size" source='pack_size' />
-                                        <NumberField label="Strip" source='strip' />
-                                        <NumberField label="Box" source='box' />
-                                        <ImageField label="Image" source="image_url" title="No Image Added For this" />
-
-                                    </Datagrid>
-                                </ArrayField>
-
-
-                            </Datagrid>
-                        </ArrayField>
-             
 
             </SimpleShowLayout>
         </Show>

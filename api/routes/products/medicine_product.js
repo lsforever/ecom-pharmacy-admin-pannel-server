@@ -344,7 +344,7 @@ router.post(
                 )
             }
 
-            console.log(medicine)
+           
 
             await medicine.save()
             res.status(200).json({ _id: medicine._id })
