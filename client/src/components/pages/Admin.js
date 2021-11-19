@@ -44,6 +44,8 @@ import MedicineTypeList from '../items/admin/product/medicine_product/type/TypeL
 import MedicineTypeShow from '../items/admin/product/medicine_product/type/TypeShow'
 /////
 
+import { MenuLayout }  from '../items/admin/menu/layout';
+
 
 //TODO delete uninstall if not needed
 //import TreeMenu from '@bb-tech/ra-treemenu';
@@ -66,6 +68,7 @@ const Admin = () => {
 
             <ReactAdmin
                 title="Niraamoy"
+                layout={MenuLayout}
                 dataProvider={DataProvider}
                 authProvider={AuthProvider}
                 loginPage={CustomLoginPage}
