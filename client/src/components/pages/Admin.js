@@ -12,20 +12,37 @@ import UserEdit from '../items/admin/user/UserEdit'
 import UserCreate from '../items/admin/user/UserCreate'
 import UserShow from '../items/admin/user/UserShow'
 
-import ProductList from '../items/admin/product/ProductList'
-import ProductEdit from '../items/admin/product/ProductEdit'
-import ProductCreate from '../items/admin/product/ProductCreate'
-import ProductShow from '../items/admin/product/ProductShow'
+// import ProductList from '../items/admin/product/ProductList'
+// import ProductEdit from '../items/admin/product/ProductEdit'
+// import ProductCreate from '../items/admin/product/ProductCreate'
+// import ProductShow from '../items/admin/product/ProductShow'
 
-import ProductCategoryList from '../items/admin/product_category/ProductCategoryList'
-import ProductCategoryCreate from '../items/admin/product_category/ProductCategoryCreate'
-import ProductCategoryEdit from '../items/admin/product_category/ProductCategoryEdit'
+// import ProductCategoryList from '../items/admin/product_category/ProductCategoryList'
+// import ProductCategoryCreate from '../items/admin/product_category/ProductCategoryCreate'
+// import ProductCategoryEdit from '../items/admin/product_category/ProductCategoryEdit'
 
 
 import MedicineCreate from '../items/admin/product/medicine_product/MedicineCreate'
 import MedicineShow from '../items/admin/product/medicine_product/MedicineShow'
 import MedicineList from '../items/admin/product/medicine_product/MedicineList'
 import MedicineEdit from '../items/admin/product/medicine_product/MedicineEdit'
+
+/////
+import CompanyCreate from '../items/admin/product/company/CompanyCreate'
+import CompanyEdit from '../items/admin/product/company/CompanyEdit'
+import CompanyList from '../items/admin/product/company/CompanyList'
+import CompanyShow from '../items/admin/product/company/CompanyShow'
+/////
+import MedicineGenericCreate from '../items/admin/product/medicine_product/generic/GenericCreate'
+import MedicineGenericEdit from '../items/admin/product/medicine_product/generic/GenericEdit'
+import MedicineGenericList from '../items/admin/product/medicine_product/generic/GenericList'
+import MedicineGenericShow from '../items/admin/product/medicine_product/generic/GenericShow'
+/////
+import MedicineTypeCreate from '../items/admin/product/medicine_product/type/TypeCreate'
+import MedicineTypeEdit from '../items/admin/product/medicine_product/type/TypeEdit'
+import MedicineTypeList from '../items/admin/product/medicine_product/type/TypeList'
+import MedicineTypeShow from '../items/admin/product/medicine_product/type/TypeShow'
+/////
 
 
 //TODO delete uninstall if not needed
@@ -93,9 +110,9 @@ const Admin = () => {
                 {/* <Resource name="vendors" icon={SportsBaseballRoundedIcon} options={{ label: 'Vendors' }} list={VendorList} create={VendorCreate} edit={VendorEdit} show={VendorShow} /> */}
 
                
-                <Resource name="product-companies"/>
-                <Resource name="product-medicine-generic"/>
-                <Resource name="product-medicine-type"/>
+                <Resource name="product-companies" options={{ label: 'Companies' }} list={CompanyList} create={CompanyCreate} edit={CompanyEdit} show={CompanyShow} />
+                <Resource name="product-medicine-generic" options={{ label: 'Medicine Generics' }} list={MedicineGenericList} create={MedicineGenericCreate} edit={MedicineGenericEdit} show={MedicineGenericShow} />
+                <Resource name="product-medicine-type" options={{ label: 'Medicine Types' }} list={MedicineTypeList} create={MedicineTypeCreate} edit={MedicineTypeEdit} show={MedicineTypeShow} />
               
 
 
